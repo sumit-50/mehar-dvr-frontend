@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const PORT = Number(process.env.PORT || process.env.NITRO_PORT || 3000);
 const HOST = "0.0.0.0";
 const CLIENT_DIR = path.join(__dirname, "dist", "client");
+const SERVER_BUNDLE = path.join(__dirname, "dist", "server", "server.js");
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -28,21 +29,22 @@ const MIME_TYPES = {
   ".webp": "image/webp",
 };
 
-// Find the main HTML entry file
-function getIndexHtmlPath() {
-  const directIndex = path.join(CLIENT_DIR, "index.html");
-  if (fs.existsSync(directIndex)) return directIndex;
+let ssrHandler = null;
 
-  if (fs.existsSync(CLIENT_DIR)) {
-    const htmlFiles = fs.readdirSync(CLIENT_DIR).filter((f) => f.endsWith(".html"));
-    if (htmlFiles.length > 0) {
-      return path.join(CLIENT_DIR, htmlFiles[0]);
+// Dynamically import the compiled TanStack Start SSR Server Bundle
+try {
+  if (fs.existsSync(SERVER_BUNDLE)) {
+    const serverModule = await import(`file://${SERVER_BUNDLE.replace(/\\/g, "/")}`);
+    if (serverModule?.default?.fetch && typeof serverModule.default.fetch === "function") {
+      ssrHandler = serverModule.default.fetch;
+      console.log("✅ TanStack Start SSR handler loaded successfully.");
     }
   }
-  return null;
+} catch (err) {
+  console.error("❌ Failed to load SSR bundle:", err);
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
@@ -53,7 +55,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 1. Check if the exact static asset exists in dist/client
+  // 1. Serve static client asset if file exists in dist/client
   const filePath = path.join(CLIENT_DIR, pathname);
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
@@ -66,21 +68,56 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 2. Serve SPA Client Entry HTML for all page routes (/, /auth, /dashboard, /visit, /admin/*)
-  const indexHtml = getIndexHtmlPath();
-  if (indexHtml && fs.existsSync(indexHtml)) {
-    res.writeHead(200, {
-      "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "no-cache",
-    });
-    fs.createReadStream(indexHtml).pipe(res);
-    return;
+  // 2. Delegate page route to TanStack Start SSR Handler
+  if (ssrHandler) {
+    try {
+      const headers = new Headers();
+      for (const [key, value] of Object.entries(req.headers)) {
+        if (value) {
+          if (Array.isArray(value)) {
+            value.forEach((v) => headers.append(key, v));
+          } else {
+            headers.set(key, value);
+          }
+        }
+      }
+
+      const body = req.method !== "GET" && req.method !== "HEAD" ? req : undefined;
+      const webReq = new Request(parsedUrl.toString(), {
+        method: req.method,
+        headers,
+        body,
+        duplex: "half",
+      });
+
+      const webRes = await ssrHandler(webReq, {}, {});
+
+      const resHeaders = {};
+      webRes.headers.forEach((val, key) => {
+        resHeaders[key] = val;
+      });
+
+      res.writeHead(webRes.status || 200, resHeaders);
+
+      if (webRes.body) {
+        const reader = webRes.body.getReader();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+      }
+      res.end();
+      return;
+    } catch (ssrErr) {
+      console.error("[SSR Render Error]", ssrErr);
+    }
   }
 
-  res.writeHead(404, { "Content-Type": "text/plain" });
-  res.end("Page Not Found");
+  res.writeHead(500, { "Content-Type": "text/plain" });
+  res.end("Internal Server Error rendering page");
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`🚀 Mehar DVR Frontend client production server running on http://${HOST}:${PORT}`);
+  console.log(`🚀 Mehar DVR Frontend production server running on http://${HOST}:${PORT}`);
 });

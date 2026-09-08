@@ -31,7 +31,8 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Copy built distribution, server runner and package file
+# Copy node_modules, built files, server runner and package file
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prod-server.js ./prod-server.js
 COPY --from=builder /app/package*.json ./
