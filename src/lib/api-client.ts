@@ -1,4 +1,5 @@
-const API_BASE = (import.meta as any).env?.["VITE_API_URL"] || "http://ri3m0h5s1onu9d995upymqcx.187.77.187.120.sslip.io/api";
+const DEFAULT_API_BASE = "https://ri3m0h5s1onu9d995upymqcx.187.77.187.120.sslip.io/api";
+const API_BASE = (import.meta as any).env?.["VITE_API_URL"] || DEFAULT_API_BASE;
 
 export async function apiFetch<T = any>(
   path: string,
@@ -19,7 +20,14 @@ export async function apiFetch<T = any>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const url = `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+  let base = API_BASE;
+  // Automatically upgrade to HTTPS if current page is loaded over HTTPS to prevent mixed content blocking
+  if (typeof window !== "undefined" && window.location.protocol === "https:" && base.startsWith("http://")) {
+    base = base.replace(/^http:\/\//i, "https://");
+  }
+
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${base}${cleanPath}`;
   
   const init: RequestInit = {
     method: options.method || (options.body ? "POST" : "GET"),

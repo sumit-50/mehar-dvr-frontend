@@ -165,7 +165,7 @@ function LandingPage() {
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md transition-all">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md transition-all pt-safe">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3.5">
           <div className="flex items-center gap-3">
             <div className="relative">

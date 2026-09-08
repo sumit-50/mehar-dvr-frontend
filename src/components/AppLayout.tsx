@@ -236,8 +236,8 @@ export function AppLayout() {
         </div>
       </aside>
 
-      {/* Mobile top bar */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/95 px-4 py-3 backdrop-blur md:hidden">
+      {/* Mobile top bar with notch & safe-area spacing */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/95 px-4 pt-safe pb-3 backdrop-blur md:hidden shadow-xs">
         <div className="flex items-center gap-2.5">
           <img
             src={logoUrl}
@@ -264,7 +264,7 @@ export function AppLayout() {
                 <Menu className="h-5 w-5" />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 p-4">
+            <SheetContent side="right" className="w-72 p-4 pt-safe">
               {session?.isAdmin ? (
                 <div className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1">
                   <UserAvatar name={resolvedName} className="h-10 w-10 text-sm" />
@@ -300,20 +300,20 @@ export function AppLayout() {
         </div>
       </header>
 
-      {/* Content */}
-      <main className="mx-auto w-full max-w-7xl px-4 pb-24 pt-5 md:py-8 md:pl-72 md:pr-8 md:max-w-none">
+      {/* Content with generous top padding to prevent any overlap */}
+      <main className="mx-auto w-full max-w-7xl px-4 pb-28 pt-6 sm:pt-8 md:py-8 md:pl-72 md:pr-8 md:max-w-none">
         <Outlet />
       </main>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-card/95 backdrop-blur md:hidden">
+      {/* Mobile bottom nav with safe-area spacing */}
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-card/95 backdrop-blur pb-safe pt-2 md:hidden">
         {nav.slice(0, 5).map((item) => (
           <Link
             key={item.to}
             to={item.to}
             activeOptions={{ exact: item.to === "/dashboard" }}
-            className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium text-muted-foreground"
-            activeProps={{ className: "text-primary" }}
+            className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+            activeProps={{ className: "text-primary font-bold" }}
           >
             <item.icon className={cn("h-5 w-5")} />
             {item.label}

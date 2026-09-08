@@ -89,18 +89,20 @@ export function usePWAInstall() {
 }
 
 export function PWAInstallPrompt({ className }: { className?: string }) {
+  const [mounted, setMounted] = useState(false);
   const { isInstallable, isInstalled, isIOS, triggerInstall } = usePWAInstall();
   const [dismissed, setDismissed] = useState(false);
   const [showIOSModal, setShowIOSModal] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const isDismissed = sessionStorage.getItem("dvr_pwa_banner_dismissed") === "true";
     if (isDismissed) {
       setDismissed(true);
     }
   }, []);
 
-  if (isInstalled || !isInstallable || dismissed) {
+  if (!mounted || isInstalled || !isInstallable || dismissed) {
     return null;
   }
 
