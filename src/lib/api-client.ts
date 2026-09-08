@@ -1,4 +1,4 @@
-const API_BASE = (import.meta as any).env?.["VITE_API_URL"] || "http://localhost:5000/api";
+const API_BASE = (import.meta as any).env?.["VITE_API_URL"] || "http://ri3m0h5s1onu9d995upymqcx.187.77.187.120.sslip.io/api";
 
 export async function apiFetch<T = any>(
   path: string,
