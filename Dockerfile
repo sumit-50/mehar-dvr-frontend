@@ -28,17 +28,17 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
 
-# Copy built files and dependencies from builder stage
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+# Copy built distribution, server runner and package file
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prod-server.js ./prod-server.js
+COPY --from=builder /app/package*.json ./
 
-# Expose production port
+# Expose production HTTP port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start TanStack Start production server
-CMD ["node", "dist/server/server.js"]
+# Start production server
+CMD ["node", "prod-server.js"]
