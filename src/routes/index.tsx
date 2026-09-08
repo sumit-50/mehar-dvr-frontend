@@ -14,8 +14,38 @@ import {
   Sparkles,
 } from "lucide-react";
 import logoAsset from "@/assets/mehar-logo.png.asset.json";
+import { LocationMap, type MapCircle, type MapMarker } from "@/components/LocationMap";
 
 const logoUrl = logoAsset.url;
+
+const heroCenter: [number, number] = [26.905, 75.79];
+const heroCircles: MapCircle[] = [
+  {
+    id: "hero-fence",
+    lat: 26.905,
+    lng: 75.79,
+    radius: 100,
+    tone: "success",
+  },
+];
+const heroMarkers: MapMarker[] = [
+  {
+    id: "hero-hq",
+    lat: 26.905,
+    lng: 75.79,
+    title: "Mehar Advisory HQ",
+    tone: "primary",
+    label: "HQ",
+  },
+  {
+    id: "hero-rep",
+    lat: 26.90528,
+    lng: 75.7903,
+    title: "Rajesh Kumar (38m away)",
+    tone: "success",
+    label: "38m",
+  },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -295,33 +325,54 @@ function LandingPage() {
                         <span>5G 100%</span>
                       </div>
 
-                      {/* Camera Viewfinder Area */}
-                      <div className="relative aspect-[4/3.2] w-full overflow-hidden bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950/70 p-3 flex flex-col justify-between">
+                      {/* Camera / GPS Map Viewfinder Area */}
+                      <div className="relative aspect-[4/3.2] w-full overflow-hidden bg-slate-950 p-3 flex flex-col justify-between">
                         
-                        {/* Crosshairs */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-35 pointer-events-none">
-                          <div className="h-28 w-28 border border-white/60 rounded-xl flex items-center justify-center">
-                            <div className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping" />
+                        {/* Live Geo-Map Layer */}
+                        <div className="absolute inset-0 z-0">
+                          <LocationMap
+                            center={heroCenter}
+                            zoom={16}
+                            tileTheme="dark"
+                            interactive={false}
+                            showControls={false}
+                            className="w-full h-full"
+                            style={{ minHeight: "100%", height: "100%", borderRadius: 0 }}
+                            circles={heroCircles}
+                            markers={heroMarkers}
+                          />
+                          {/* Dark overlay for optimal text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-slate-950/60 pointer-events-none" />
+                        </div>
+
+                        {/* Crosshairs & Radar Reticle Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none z-10">
+                          <div className="h-28 w-28 border border-emerald-400/60 rounded-2xl flex items-center justify-center relative">
+                            <div className="h-2 w-2 bg-emerald-400 rounded-full animate-ping" />
+                            <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-emerald-400" />
+                            <div className="absolute -top-1 -right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-emerald-400" />
+                            <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-emerald-400" />
+                            <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-emerald-400" />
                           </div>
                         </div>
 
                         {/* Camera Top Bar */}
-                        <div className="relative z-10 flex items-center justify-between text-[10px] font-mono bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                        <div className="relative z-20 flex items-center justify-between text-[10px] font-mono bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 shadow-lg">
                           <div className="flex items-center gap-1.5">
                             <Camera className="h-3 w-3 text-red-400 animate-pulse" />
-                            <span className="font-bold text-white">LIVE CAMERA</span>
+                            <span className="font-bold text-white tracking-wide">LIVE GPS RADAR</span>
                           </div>
-                          <span className="text-emerald-400 font-bold">100m PERMITTED</span>
+                          <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30">100m PERMITTED</span>
                         </div>
 
                         {/* Stamped Watermark Banner */}
-                        <div className="relative z-10 rounded-xl bg-black/85 backdrop-blur-md p-2.5 border border-white/15 shadow-xl text-left">
+                        <div className="relative z-20 rounded-xl bg-slate-950/90 backdrop-blur-md p-2.5 border border-white/15 shadow-2xl text-left">
                           <div className="flex items-center justify-between gap-1 border-b border-white/10 pb-1 mb-1">
                             <div className="flex items-center gap-1 min-w-0">
                               <MapPin className="h-3 w-3 text-primary shrink-0" />
                               <p className="text-[11px] font-bold text-white truncate">Mehar Advisory · HQ</p>
                             </div>
-                            <span className="text-[9px] font-extrabold bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded shrink-0">
+                            <span className="text-[9px] font-extrabold bg-emerald-500 text-slate-950 px-1.5 py-0.2 rounded shrink-0 shadow-sm">
                               VERIFIED
                             </span>
                           </div>

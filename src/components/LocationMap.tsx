@@ -25,9 +25,13 @@ interface LocationMapProps {
   circles?: MapCircle[];
   onPick?: (lat: number, lng: number) => void;
   className?: string;
+  style?: React.CSSProperties;
   center?: [number, number] | undefined;
   zoom?: number;
   fit?: boolean;
+  tileTheme?: "osm" | "dark" | "voyager";
+  interactive?: boolean;
+  showControls?: boolean;
 }
 
 const TONE_COLOR: Record<string, string> = {
@@ -37,14 +41,33 @@ const TONE_COLOR: Record<string, string> = {
   muted: "#64748b",
 };
 
+const TILE_URLS: Record<string, { url: string; attribution: string }> = {
+  osm: {
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  dark: {
+    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
+  voyager: {
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
+};
+
 export function LocationMap({
   markers = [],
   circles = [],
   onPick,
   className,
+  style,
   center = [26.905, 75.79],
   zoom = 12,
   fit = false,
+  tileTheme = "osm",
+  interactive = true,
+  showControls = true,
 }: LocationMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,17 +87,33 @@ export function LocationMap({
     (async () => {
       const L = await import("leaflet");
       if (disposed || !containerRef.current || mapRef.current) return;
-      const map = L.map(containerRef.current, { scrollWheelZoom: true }).setView(center, zoom);
+      
+      const mapOptions: any = {
+        scrollWheelZoom: interactive,
+        dragging: interactive,
+        touchZoom: interactive,
+        doubleClickZoom: interactive,
+        boxZoom: interactive,
+        keyboard: interactive,
+        zoomControl: showControls,
+        attributionControl: showControls,
+      };
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      const map = L.map(containerRef.current, mapOptions).setView(center, zoom);
+
+      const tileConfig = TILE_URLS[tileTheme] || TILE_URLS.osm;
+      L.tileLayer(tileConfig.url, {
+        attribution: tileConfig.attribution,
         maxZoom: 19,
+        subdomains: "abcd",
       }).addTo(map);
 
       layerRef.current = L.layerGroup().addTo(map);
-      map.on("click", (e: { latlng: { lat: number; lng: number } }) => {
-        onPickRef.current?.(e.latlng.lat, e.latlng.lng);
-      });
+      if (interactive) {
+        map.on("click", (e: { latlng: { lat: number; lng: number } }) => {
+          onPickRef.current?.(e.latlng.lat, e.latlng.lng);
+        });
+      }
       leafletRef.current = L;
       mapRef.current = map;
       renderLayers();
@@ -216,7 +255,7 @@ export function LocationMap({
     <div
       ref={containerRef}
       className={className}
-      style={{ minHeight: 280, borderRadius: "var(--radius-xl)", overflow: "hidden" }}
+      style={{ minHeight: 280, borderRadius: "var(--radius-xl)", overflow: "hidden", ...style }}
     />
   );
 }
