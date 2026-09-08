@@ -1,8 +1,9 @@
 # ==========================================
 # Mehar DVR Frontend - Production Dockerfile
+# TanStack Start SSR & Client Runtime
 # ==========================================
 
-# Stage 1: Build stage (Node 22 required for TanStack React Start)
+# Stage 1: Build stage
 FROM node:22-alpine AS builder
 
 WORKDIR /app
@@ -13,31 +14,33 @@ ENV VITE_API_URL=${VITE_API_URL}
 
 # Copy package configurations
 COPY package*.json ./
-
-# Install dependencies cleanly with legacy peer deps compatibility
 RUN npm install --legacy-peer-deps
 
-# Copy source code and build production assets
+# Copy source code and build production server & client bundle
 COPY . ./
 RUN npm run build
 
-# Stage 2: High-performance Nginx production server
-FROM nginx:alpine AS runner
+# Stage 2: High-efficiency Node.js production runner
+FROM node:22-alpine AS runner
 
-# Remove default nginx static files
-RUN rm -rf /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
+ENV NITRO_HOST=0.0.0.0
+ENV NITRO_PORT=3000
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built server output and assets from builder stage
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/package*.json ./
 
-# Expose HTTP port
-EXPOSE 80
+# Expose TanStack Start SSR port
+EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+# Launch TanStack Start server
+CMD ["node", ".output/server/index.mjs"]
