@@ -2,27 +2,29 @@
 # Mehar DVR Frontend - Production Dockerfile
 # ==========================================
 
-# Stage 1: Build stage
-FROM node:20-alpine AS builder
+# Stage 1: Build stage (Node 22 required for TanStack React Start)
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Accept build arguments for environment variables
+# Build arguments for environment variables
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
-# Install dependencies (leverage cache)
+# Copy package configurations
 COPY package*.json ./
-RUN npm ci
 
-# Copy source code and build production bundle
+# Install dependencies cleanly with legacy peer deps compatibility
+RUN npm install --legacy-peer-deps
+
+# Copy source code and build production assets
 COPY . ./
 RUN npm run build
 
 # Stage 2: High-performance Nginx production server
 FROM nginx:alpine AS runner
 
-# Remove default nginx static assets
+# Remove default nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built assets from builder stage
