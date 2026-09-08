@@ -294,7 +294,7 @@ export const adminCreateEmployee = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.userId);
 
-    const assignedRole = ["admin", "accountant", "employee"].includes(data.role || "") ? data.role! : "employee";
+    const assignedRole = data.role === "admin" ? "admin" : "employee";
     const newId = crypto.randomUUID();
 
     // Sync to PostgreSQL database
@@ -341,7 +341,7 @@ export const adminCreateEmployee = createServerFn({ method: "POST" })
 export const adminSetEmployeeRole = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) =>
-    z.object({ id: z.string().min(1), role: z.enum(["admin", "accountant", "employee"]) }).parse(input),
+    z.object({ id: z.string().min(1), role: z.enum(["admin", "employee"]) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     await requireAdmin(context.userId);

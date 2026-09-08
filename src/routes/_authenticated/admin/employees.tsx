@@ -242,15 +242,15 @@ function AdminEmployeesPage() {
     setChecked(new Set(emp.location_ids ?? []));
   }
 
-  const [filterRole, setFilterRole] = useState<"all" | "admin" | "accountant" | "employee">("all");
+  const [filterRole, setFilterRole] = useState<"all" | "admin" | "employee">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"cards" | "table">("table");
 
   const setRoleMut = useMutation({
-    mutationFn: (vars: { id: string; employeeId?: string; role: "admin" | "accountant" | "employee" }) =>
+    mutationFn: (vars: { id: string; employeeId?: string; role: "admin" | "employee" }) =>
       adminSetEmployeeRole({ data: vars }),
     onSuccess: async (_, vars) => {
-      toast.success(`Role updated to ${vars.role}`);
+      toast.success(`Role updated to ${vars.role === "admin" ? "Super Admin" : "Field Staff"}`);
       await invalidate();
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : "Role update failed"),
@@ -258,17 +258,14 @@ function AdminEmployeesPage() {
 
   const allEmployees = employees ?? [];
   const adminCount = allEmployees.filter((e) => e.roles?.includes("admin") || e.role === "admin").length;
-  const accountantCount = allEmployees.filter((e) => e.roles?.includes("accountant") || e.role === "accountant").length;
-  const employeeCount = allEmployees.filter((e) => !e.roles?.includes("admin") && !e.roles?.includes("accountant") && e.role !== "admin" && e.role !== "accountant").length;
+  const employeeCount = allEmployees.filter((e) => !e.roles?.includes("admin") && e.role !== "admin").length;
   const activeCount = allEmployees.filter((e) => e.status === "active").length;
 
   const filteredEmployees = allEmployees.filter((e) => {
     const isAdm = e.roles?.includes("admin") || e.role === "admin";
-    const isAcc = e.roles?.includes("accountant") || e.role === "accountant";
-    const isEmp = !isAdm && !isAcc;
+    const isEmp = !isAdm;
 
     if (filterRole === "admin" && !isAdm) return false;
-    if (filterRole === "accountant" && !isAcc) return false;
     if (filterRole === "employee" && !isEmp) return false;
 
     if (searchTerm.trim()) {
@@ -292,7 +289,7 @@ function AdminEmployeesPage() {
               Users & Roles
             </h1>
             <p className="text-sm text-muted-foreground">
-              Directory of {allEmployees.length} registered accounts ({employeeCount} Field Staff · {accountantCount} Accountants · {adminCount} Admins)
+              Directory of {allEmployees.length} registered accounts ({employeeCount} Field Staff · {adminCount} Admins)
             </p>
           </div>
           <div className="flex items-center gap-2.5 flex-wrap">
@@ -331,26 +328,21 @@ function AdminEmployeesPage() {
         </div>
 
         {/* Breakdown Metric Stat Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 animate-fade-up">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 animate-fade-up">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Users</p>
             <p className="mt-1 font-display text-2xl font-bold">{allEmployees.length}</p>
-            <p className="text-xs text-muted-foreground">All database users</p>
+            <p className="text-xs text-muted-foreground">All database accounts</p>
           </div>
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-soft">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Field Employees</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Field Staff</p>
             <p className="mt-1 font-display text-2xl font-bold text-primary">{employeeCount}</p>
             <p className="text-xs text-muted-foreground">Visiting field staff</p>
           </div>
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 shadow-soft">
-            <p className="text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Accountants</p>
-            <p className="mt-1 font-display text-2xl font-bold text-amber-600 dark:text-amber-400">{accountantCount}</p>
-            <p className="text-xs text-muted-foreground">Financial & DVR review</p>
-          </div>
           <div className="rounded-2xl border border-purple-500/20 bg-purple-500/5 p-4 shadow-soft">
-            <p className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Admin Accounts</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Super Admins</p>
             <p className="mt-1 font-display text-2xl font-bold text-purple-600 dark:text-purple-400">{adminCount}</p>
-            <p className="text-xs text-muted-foreground">Super admin control</p>
+            <p className="text-xs text-muted-foreground">Full management control</p>
           </div>
           <div className="rounded-2xl border border-success/20 bg-success/5 p-4 shadow-soft col-span-2 sm:col-span-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-success">Active Now</p>
@@ -391,16 +383,7 @@ function AdminEmployeesPage() {
                   filterRole === "employee" ? "bg-card text-foreground shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Employees ({employeeCount})
-              </button>
-              <button
-                type="button"
-                onClick={() => setFilterRole("accountant")}
-                className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
-                  filterRole === "accountant" ? "bg-card text-foreground shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Accountants ({accountantCount})
+                Field Staff ({employeeCount})
               </button>
               <button
                 type="button"
@@ -409,7 +392,7 @@ function AdminEmployeesPage() {
                   filterRole === "admin" ? "bg-card text-foreground shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Admins ({adminCount})
+                Super Admins ({adminCount})
               </button>
             </div>
 
@@ -494,27 +477,24 @@ function AdminEmployeesPage() {
                         </td>
                         <td className="py-3.5 px-4">
                           <select
-                            value={currentRole}
+                            value={isAdmin ? "admin" : "employee"}
                             disabled={setRoleMut.isPending}
                             onChange={(e) => {
-                              const newRole = e.target.value as "admin" | "accountant" | "employee";
+                              const newRole = e.target.value as "admin" | "employee";
                               setRoleMut.mutate({ id: emp.id, employeeId: emp.employee_id, role: newRole });
                             }}
                             className={`rounded-lg px-2 py-1 text-xs font-semibold border cursor-pointer transition-colors ${
                               isAdmin
                                 ? "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30"
-                                : isAccountant
-                                ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
                                 : "bg-primary/15 text-primary border-primary/30"
                             }`}
                           >
                             <option value="employee">Field Staff</option>
-                            <option value="accountant">Accountant</option>
                             <option value="admin">Super Admin</option>
                           </select>
                         </td>
                         <td className="py-3.5 px-4">
-                          {isAdmin || isAccountant ? (
+                          {isAdmin ? (
                             <span className="inline-flex items-center gap-1 font-semibold text-muted-foreground">
                               <MapPin className="h-3 w-3 text-primary" />
                               Global Access (All)
@@ -532,7 +512,7 @@ function AdminEmployeesPage() {
                               <Switch
                                 checked={emp.status === "active"}
                                 onCheckedChange={(on) =>
-                                  setStatus.mutate({ id: emp.id, status: on ? "active" : "inactive" })
+                                   setStatus.mutate({ id: emp.id, status: on ? "active" : "inactive" })
                                 }
                                 aria-label={`Toggle ${emp.name}`}
                               />
@@ -547,16 +527,14 @@ function AdminEmployeesPage() {
                           <div className="flex items-center justify-end gap-1.5">
                             {!isAdmin ? (
                               <>
-                                {!isAccountant && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 text-xs font-semibold px-2.5"
-                                    onClick={() => openAssign(emp)}
-                                  >
-                                    Assign Locations
-                                  </Button>
-                                )}
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 text-xs font-semibold px-2.5"
+                                  onClick={() => openAssign(emp)}
+                                >
+                                  Assign Locations
+                                </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -586,8 +564,7 @@ function AdminEmployeesPage() {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 animate-fade-up">
             {filteredEmployees.map((emp) => {
               const isAdmin = emp.roles?.includes("admin") || emp.role === "admin";
-              const isAccountant = emp.roles?.includes("accountant") || emp.role === "accountant";
-              const currentRole = isAdmin ? "admin" : isAccountant ? "accountant" : "employee";
+              const currentRole = isAdmin ? "admin" : "employee";
 
               return (
                 <div key={emp.id} className="rounded-2xl border border-border bg-card p-5 shadow-soft space-y-3">
@@ -603,19 +580,16 @@ function AdminEmployeesPage() {
                         value={currentRole}
                         disabled={setRoleMut.isPending}
                         onChange={(e) => {
-                          const newRole = e.target.value as "admin" | "accountant" | "employee";
+                          const newRole = e.target.value as "admin" | "employee";
                           setRoleMut.mutate({ id: emp.id, employeeId: emp.employee_id, role: newRole });
                         }}
                         className={`rounded-lg px-2 py-0.5 text-[11px] font-semibold border cursor-pointer ${
                           isAdmin
                             ? "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30"
-                            : isAccountant
-                            ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30"
                             : "bg-primary/15 text-primary border-primary/30"
                         }`}
                       >
                         <option value="employee">Field Staff</option>
-                        <option value="accountant">Accountant</option>
                         <option value="admin">Super Admin</option>
                       </select>
                       <Badge
@@ -644,7 +618,7 @@ function AdminEmployeesPage() {
                   <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1 text-muted-foreground">
                       <MapPin className="h-3.5 w-3.5 text-primary" />
-                      {isAdmin || isAccountant ? (
+                      {isAdmin ? (
                         <strong className="text-foreground">Global Access (All Locations)</strong>
                       ) : (
                         <span><strong>{(emp.location_ids ?? []).length}</strong> locations · <strong>{emp.total_visits ?? 0}</strong> visits</span>
@@ -667,16 +641,14 @@ function AdminEmployeesPage() {
 
                   {!isAdmin && (
                     <div className="flex items-center gap-2 pt-1">
-                      {!isAccountant && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 font-semibold text-xs"
-                          onClick={() => openAssign(emp)}
-                        >
-                          Assign locations ({(emp.location_ids ?? []).length})
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 font-semibold text-xs"
+                        onClick={() => openAssign(emp)}
+                      >
+                        Assign locations ({(emp.location_ids ?? []).length})
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -764,18 +736,7 @@ function AdminEmployeesPage() {
                       onChange={() => setCreateForm({ ...createForm, role: "employee" })}
                       className="accent-primary"
                     />
-                    Field Employee
-                  </label>
-                  <label className="flex items-center gap-2 text-sm cursor-pointer font-medium">
-                    <input
-                      type="radio"
-                      name="role"
-                      value="accountant"
-                      checked={createForm.role === "accountant"}
-                      onChange={() => setCreateForm({ ...createForm, role: "accountant" })}
-                      className="accent-amber-500"
-                    />
-                    Accountant
+                    Field Staff
                   </label>
                   <label className="flex items-center gap-2 text-sm cursor-pointer font-medium">
                     <input
@@ -786,7 +747,7 @@ function AdminEmployeesPage() {
                       onChange={() => setCreateForm({ ...createForm, role: "admin" })}
                       className="accent-purple-500"
                     />
-                    Admin
+                    Super Admin
                   </label>
                 </div>
               </div>

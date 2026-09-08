@@ -102,13 +102,6 @@ function ProfilePage() {
     rawEmpId === "MEH-ADM-001" ||
     (profile?.email && profile.email.toLowerCase().startsWith("admin"))
   );
-  const isAccountant = Boolean(
-    !isAdmin && (
-      localRole === "accountant" ||
-      profile?.role === "accountant" ||
-      session?.roles?.includes("accountant")
-    )
-  );
 
   const rawDisplayName = profile?.full_name || profile?.name || localName || "";
   const displayName = rawDisplayName || (isAdmin ? "Yogendra (Admin)" : "Employee");
@@ -363,12 +356,12 @@ function ProfilePage() {
           <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5 sm:col-span-2">
             <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Account Role</dt>
             <dd className={`mt-1 inline-flex items-center gap-1.5 font-semibold ${
-              isAdmin ? "text-purple-600 dark:text-purple-400" : isAccountant ? "text-amber-600 dark:text-amber-400" : "text-primary"
+              isAdmin ? "text-purple-600 dark:text-purple-400" : "text-primary"
             }`}>
               <span className={`h-2 w-2 rounded-full ${
-                isAdmin ? "bg-purple-500" : isAccountant ? "bg-amber-500" : "bg-emerald-500"
+                isAdmin ? "bg-purple-500" : "bg-emerald-500"
               }`} />
-              {isAdmin ? "Administrator / Super Admin" : isAccountant ? "Accountant (Finance & DVR Oversight)" : "Field Visiting Employee"}
+              {isAdmin ? "Administrator / Super Admin" : "Field Visiting Employee"}
             </dd>
           </div>
         </dl>
