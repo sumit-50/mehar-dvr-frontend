@@ -326,8 +326,8 @@ function EmployeeDashboard({
         return old.filter((l: any) => l.status !== "pending");
       });
     },
-    onSuccess: async (res) => {
-      toast.success(`Removed all (${res.deletedVisits}) visit entries & cleared office requests!`);
+    onSuccess: async () => {
+      toast.success("Removed all visit entries & cleared office requests!");
       setShowClearConfirm(false);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["my-visits"] }),
@@ -1290,12 +1290,12 @@ function AdminDashboard({
     visitsByEmployee.set(v.employee_id, list);
   }
   const trackerRows = (employees ?? [])
-    .filter((e) => !e.roles.includes("admin"))
+    .filter((e) => !(e.roles?.includes("admin") || e.role === "admin" || e.email?.toLowerCase().includes("admin") || e.employee_id === "MEH000" || e.employee_id === "MEHADM001"))
     .map((e) => ({
       employee: e,
-      todayVisits: (visitsByEmployee.get(e.id) ?? []).slice().sort((a, b) => b.visit_time.localeCompare(a.visit_time)),
+      todayVisits: (visitsByEmployee.get(e.id) ?? []).slice().sort((a, b) => (b.visit_time || "").localeCompare(a.visit_time || "")),
     }))
-    .sort((a, b) => b.todayVisits.length - a.todayVisits.length || a.employee.name.localeCompare(b.employee.name));
+    .sort((a, b) => b.todayVisits.length - a.todayVisits.length || (a.employee?.name || "").localeCompare(b.employee?.name || ""));
 
   // Chart data — visits per day for the last 7 days
   const dailyData = Array.from({ length: 7 }, (_, i) => {

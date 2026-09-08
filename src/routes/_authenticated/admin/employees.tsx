@@ -257,14 +257,14 @@ function AdminEmployeesPage() {
   });
 
   const allEmployees = employees ?? [];
-  const adminCount = allEmployees.filter((e) => e.roles.includes("admin") || e.role === "admin").length;
-  const accountantCount = allEmployees.filter((e) => e.roles.includes("accountant") || e.role === "accountant").length;
-  const employeeCount = allEmployees.filter((e) => !e.roles.includes("admin") && !e.roles.includes("accountant") && e.role !== "admin" && e.role !== "accountant").length;
+  const adminCount = allEmployees.filter((e) => e.roles?.includes("admin") || e.role === "admin").length;
+  const accountantCount = allEmployees.filter((e) => e.roles?.includes("accountant") || e.role === "accountant").length;
+  const employeeCount = allEmployees.filter((e) => !e.roles?.includes("admin") && !e.roles?.includes("accountant") && e.role !== "admin" && e.role !== "accountant").length;
   const activeCount = allEmployees.filter((e) => e.status === "active").length;
 
   const filteredEmployees = allEmployees.filter((e) => {
-    const isAdm = e.roles.includes("admin") || e.role === "admin";
-    const isAcc = e.roles.includes("accountant") || e.role === "accountant";
+    const isAdm = e.roles?.includes("admin") || e.role === "admin";
+    const isAcc = e.roles?.includes("accountant") || e.role === "accountant";
     const isEmp = !isAdm && !isAcc;
 
     if (filterRole === "admin" && !isAdm) return false;
@@ -467,8 +467,8 @@ function AdminEmployeesPage() {
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {filteredEmployees.map((emp) => {
-                    const isAdmin = emp.roles.includes("admin") || emp.role === "admin";
-                    const isAccountant = emp.roles.includes("accountant") || emp.role === "accountant";
+                    const isAdmin = emp.roles?.includes("admin") || emp.role === "admin";
+                    const isAccountant = emp.roles?.includes("accountant") || emp.role === "accountant";
                     const currentRole = isAdmin ? "admin" : isAccountant ? "accountant" : "employee";
 
                     return (
@@ -585,8 +585,8 @@ function AdminEmployeesPage() {
           /* CARDS VIEW */
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 animate-fade-up">
             {filteredEmployees.map((emp) => {
-              const isAdmin = emp.roles.includes("admin") || emp.role === "admin";
-              const isAccountant = emp.roles.includes("accountant") || emp.role === "accountant";
+              const isAdmin = emp.roles?.includes("admin") || emp.role === "admin";
+              const isAccountant = emp.roles?.includes("accountant") || emp.role === "accountant";
               const currentRole = isAdmin ? "admin" : isAccountant ? "accountant" : "employee";
 
               return (
