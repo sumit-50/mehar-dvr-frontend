@@ -1867,15 +1867,13 @@ function AdminDashboard({
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
             {/* Date Preset Segmented Control */}
             <div className="inline-flex items-center p-1 rounded-xl bg-card border border-border shadow-2xs gap-0.5 overflow-x-auto max-w-full">
-              {(
-                [
-                  { id: "today", label: "Today", count: allVisits.filter((v) => v.visit_date === todayStrVal).length },
-                  { id: "week", label: "7 Days" },
-                  { id: "month", label: "30 Days" },
-                  { id: "all", label: "All", count: allVisits.length },
-                  { id: "custom", label: "Custom ▾" },
-                ] as const
-              ).map((preset) => (
+              {[
+                { id: "today" as const, label: "Today", count: allVisits.filter((v) => v.visit_date === todayStrVal).length },
+                { id: "week" as const, label: "7 Days", count: allVisits.filter((v) => v.visit_date && v.visit_date >= weekAgoStr && v.visit_date <= todayStrVal).length },
+                { id: "month" as const, label: "30 Days", count: allVisits.filter((v) => v.visit_date && v.visit_date >= monthStartStr && v.visit_date <= todayStrVal).length },
+                { id: "all" as const, label: "All", count: allVisits.length },
+                { id: "custom" as const, label: "Custom ▾", count: undefined },
+              ].map((preset) => (
                 <button
                   key={preset.id}
                   type="button"
@@ -1887,7 +1885,7 @@ function AdminDashboard({
                   }`}
                 >
                   {preset.label}
-                  {preset.count !== undefined ? ` (${preset.count})` : ""}
+                  {typeof preset.count === "number" ? ` (${preset.count})` : ""}
                 </button>
               ))}
             </div>
