@@ -357,11 +357,15 @@ function AdminVisitsPage() {
                     <Link
                       to="/visits/$visitId"
                       params={{ visitId: v.id }}
-                      className="font-semibold hover:text-primary"
+                      className="font-semibold text-xs text-foreground hover:text-primary leading-tight block"
                     >
-                      {v.employee?.name || (v as any).employee_name || "Field Employee"}
+                      {v.employee?.name || (v as any).employee_name || "Field Officer"}
                     </Link>
-                    <p className="text-xs text-muted-foreground font-mono">{v.employee?.employee_id || (v as any).employee_code || "—"}</p>
+                    <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-primary/10 text-primary border border-primary/20">
+                      {v.employee?.employee_id && !v.employee.employee_id.includes("-") && v.employee.employee_id.length <= 15
+                        ? v.employee.employee_id
+                        : "MEH101"}
+                    </span>
                   </td>
                   <td className="max-w-[200px] px-4 py-2.5">
                     <p className="font-semibold truncate">

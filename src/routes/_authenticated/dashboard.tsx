@@ -1806,34 +1806,39 @@ function AdminDashboard({
         </div>
       </section>
 
-      {/* ---------- 📅 Super Admin Powerful DVR Filters & Report Explorer ---------- */}
-      <section className="rounded-3xl border border-border bg-card p-6 shadow-soft space-y-5 animate-fade-up">
+      {/* ---------- 📅 Super Admin Streamlined DVR Reports & History Explorer ---------- */}
+      <section className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-soft space-y-4 animate-fade-up">
         {/* Section Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary font-bold">
-                <SlidersHorizontal className="h-4 w-4" />
-              </div>
-              <h2 className="font-display text-lg font-bold text-foreground">
-                DVR Visit Reports & History Explorer
-              </h2>
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-border/60">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary font-bold shadow-xs">
+              <SlidersHorizontal className="h-4.5 w-4.5" />
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Filter by date, field employee, branch location, status, purpose, and GPS accuracy.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="font-display text-base sm:text-lg font-bold text-foreground">
+                  DVR Visit Reports
+                </h2>
+                <span className="rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-[11px] font-bold text-primary">
+                  {filteredVisits.length} {filteredVisits.length === 1 ? "Record" : "Records"}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Live field check-in explorer & GPS verification logs
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             {activeFilterCount > 0 && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={resetAllFilters}
-                className="text-xs font-semibold h-8 gap-1 text-muted-foreground hover:text-foreground border-border"
+                className="text-xs font-semibold h-8 gap-1 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-xl"
               >
-                <RotateCcw className="h-3 w-3" />
-                Reset Filters ({activeFilterCount})
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset ({activeFilterCount})
               </Button>
             )}
 
@@ -1841,126 +1846,116 @@ function AdminDashboard({
               variant="outline"
               size="sm"
               onClick={exportFilteredCsv}
-              className="text-xs font-semibold h-8 gap-1.5 shadow-xs border-border"
+              className="text-xs font-semibold h-8 gap-1.5 shadow-xs border-border rounded-xl"
             >
               <Download className="h-3.5 w-3.5 text-primary" />
-              Export CSV ({filteredVisits.length})
+              Export CSV
             </Button>
 
             <Link
               to="/admin/visits"
-              className="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all h-8"
+              className="inline-flex items-center gap-1 rounded-xl bg-primary/10 px-3 py-1 text-xs font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all h-8"
             >
               All Reports <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="rounded-2xl border border-border/80 bg-muted/20 p-4 space-y-3.5">
-          {/* Top Row: Date Presets & Search */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-            {/* 1. Date Range Preset Pills */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs font-bold text-muted-foreground mr-1 flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5 text-primary" />
-                Date:
-              </span>
-              <button
-                type="button"
-                onClick={() => setDatePreset("today")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  datePreset === "today"
-                    ? "bg-primary text-primary-foreground shadow-sm font-bold"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Today ({allVisits.filter((v) => v.visit_date === todayStrVal).length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setDatePreset("week")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  datePreset === "week"
-                    ? "bg-primary text-primary-foreground shadow-sm font-bold"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                This Week
-              </button>
-              <button
-                type="button"
-                onClick={() => setDatePreset("month")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  datePreset === "month"
-                    ? "bg-primary text-primary-foreground shadow-sm font-bold"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                This Month
-              </button>
-              <button
-                type="button"
-                onClick={() => setDatePreset("all")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  datePreset === "all"
-                    ? "bg-primary text-primary-foreground shadow-sm font-bold"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                All Time ({allVisits.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setDatePreset("custom")}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  datePreset === "custom"
-                    ? "bg-primary text-primary-foreground shadow-sm font-bold"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Custom Date ▾
-              </button>
+        {/* Compact Modern Filter Toolbar */}
+        <div className="rounded-2xl border border-border/80 bg-muted/20 p-3 sm:p-3.5 space-y-2.5">
+          {/* Row 1: Segmented Date Pills + Quick Search + View Mode */}
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
+            {/* Date Preset Segmented Control */}
+            <div className="inline-flex items-center p-1 rounded-xl bg-card border border-border shadow-2xs gap-0.5 overflow-x-auto max-w-full">
+              {(
+                [
+                  { id: "today", label: "Today", count: allVisits.filter((v) => v.visit_date === todayStrVal).length },
+                  { id: "week", label: "7 Days" },
+                  { id: "month", label: "30 Days" },
+                  { id: "all", label: "All", count: allVisits.length },
+                  { id: "custom", label: "Custom ▾" },
+                ] as const
+              ).map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setDatePreset(preset.id)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                    datePreset === preset.id
+                      ? "bg-primary text-primary-foreground shadow-xs font-bold"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                  }`}
+                >
+                  {preset.label}
+                  {preset.count !== undefined ? ` (${preset.count})` : ""}
+                </button>
+              ))}
             </div>
 
-            {/* Instant Search Box */}
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search by Employee, Office, Purpose, Remarks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 pr-8 h-9 text-xs rounded-xl bg-card border-border"
-              />
-              {searchQuery && (
+            {/* Quick Search & View Toggle */}
+            <div className="flex items-center gap-2 flex-1 max-w-md">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search staff, branch, purpose..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 pr-7 h-8.5 text-xs rounded-xl bg-card border-border"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+
+              {/* View Switch */}
+              <div className="flex items-center gap-0.5 rounded-xl bg-card p-0.5 border border-border shadow-2xs shrink-0">
                 <button
                   type="button"
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setViewMode("table")}
+                  className={`px-2 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    viewMode === "table" ? "bg-primary/10 text-primary font-bold" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Table View"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  Table
                 </button>
-              )}
+                <button
+                  type="button"
+                  onClick={() => setViewMode("cards")}
+                  className={`px-2 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    viewMode === "cards" ? "bg-primary/10 text-primary font-bold" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Cards View"
+                >
+                  Cards
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Custom Date Pickers (Shown when Custom Date is selected) */}
+          {/* Custom Date Pickers Drawer (Smooth toggle) */}
           {datePreset === "custom" && (
-            <div className="flex items-center gap-2.5 p-3 rounded-xl bg-card border border-primary/20 animate-fade-up">
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-card border border-primary/30 animate-fade-up flex-wrap">
               <span className="text-xs font-semibold text-muted-foreground">From:</span>
               <Input
                 type="date"
                 value={customFromDate}
                 onChange={(e) => setCustomFromDate(e.target.value)}
-                className="h-8 text-xs w-36 bg-background rounded-lg"
+                className="h-7.5 text-xs w-36 bg-background rounded-lg"
               />
               <span className="text-xs font-semibold text-muted-foreground">To:</span>
               <Input
                 type="date"
                 value={customToDate}
                 onChange={(e) => setCustomToDate(e.target.value)}
-                className="h-8 text-xs w-36 bg-background rounded-lg"
+                className="h-7.5 text-xs w-36 bg-background rounded-lg"
               />
               {(customFromDate || customToDate) && (
                 <Button
@@ -1970,7 +1965,7 @@ function AdminDashboard({
                     setCustomFromDate("");
                     setCustomToDate("");
                   }}
-                  className="h-8 text-xs text-muted-foreground hover:text-foreground"
+                  className="h-7.5 text-xs text-muted-foreground hover:text-foreground"
                 >
                   Clear Range
                 </Button>
@@ -1978,19 +1973,16 @@ function AdminDashboard({
             </div>
           )}
 
-          {/* Bottom Row: Dropdown Select Filters */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-1">
-            {/* 2. Employee Dropdown */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <User className="h-3 w-3 text-primary" /> Employee
-              </label>
+          {/* Row 2: Compact Filter Dropdowns */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            {/* Employee Filter */}
+            <div className="relative">
               <select
                 value={filterEmployeeId}
                 onChange={(e) => setFilterEmployeeId(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-card px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
+                className="w-full h-8.5 rounded-xl border border-border bg-card px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs truncate cursor-pointer"
               >
-                <option value="all">All Employees ({trackerRows.length})</option>
+                <option value="all">👤 All Staff ({trackerRows.length})</option>
                 {trackerRows.map(({ employee: e }) => (
                   <option key={e.id} value={e.id}>
                     {e.name} ({e.employee_id})
@@ -1999,17 +1991,14 @@ function AdminDashboard({
               </select>
             </div>
 
-            {/* 3. Location Dropdown */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-primary" /> Location
-              </label>
+            {/* Location Filter */}
+            <div className="relative">
               <select
                 value={filterLocationId}
                 onChange={(e) => setFilterLocationId(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-card px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs truncate"
+                className="w-full h-8.5 rounded-xl border border-border bg-card px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs truncate cursor-pointer"
               >
-                <option value="all">All Locations ({(locations ?? []).length})</option>
+                <option value="all">📍 All Offices ({(locations ?? []).length})</option>
                 {(locations ?? []).map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.location_name} {l.company_name ? `(${l.company_name})` : ""}
@@ -2018,34 +2007,28 @@ function AdminDashboard({
               </select>
             </div>
 
-            {/* 4. Status Dropdown */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <BadgeCheck className="h-3 w-3 text-primary" /> Status
-              </label>
+            {/* Status Filter */}
+            <div className="relative">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
-                className="w-full h-9 rounded-xl border border-border bg-card px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
+                className="w-full h-8.5 rounded-xl border border-border bg-card px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs cursor-pointer"
               >
-                <option value="all">All Statuses</option>
+                <option value="all">🏷️ All Statuses</option>
                 <option value="verified">Verified ✓</option>
-                <option value="submitted">Submitted ⏳ (Pending)</option>
+                <option value="submitted">Pending ⏳</option>
                 <option value="rejected">Rejected ✕</option>
               </select>
             </div>
 
-            {/* 5. Purpose Dropdown */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <ClipboardList className="h-3 w-3 text-primary" /> Purpose
-              </label>
+            {/* Purpose Filter */}
+            <div className="relative">
               <select
                 value={filterPurpose}
                 onChange={(e) => setFilterPurpose(e.target.value)}
-                className="w-full h-9 rounded-xl border border-border bg-card px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
+                className="w-full h-8.5 rounded-xl border border-border bg-card px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs truncate cursor-pointer"
               >
-                <option value="all">All Purposes</option>
+                <option value="all">📋 All Purposes</option>
                 <option value="Client Consultation">Client Consultation</option>
                 <option value="Physical Meeting">Physical Meeting</option>
                 <option value="Inspection / Audit">Inspection / Audit</option>
@@ -2055,68 +2038,30 @@ function AdminDashboard({
               </select>
             </div>
 
-            {/* 6. Verification (GPS Geofence) Dropdown */}
-            <div className="space-y-1 col-span-2 sm:col-span-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <Crosshair className="h-3 w-3 text-primary" /> Geofence
-              </label>
+            {/* GPS Range Filter */}
+            <div className="relative col-span-2 sm:col-span-1">
               <select
                 value={filterVerification}
                 onChange={(e) => setFilterVerification(e.target.value as any)}
-                className="w-full h-9 rounded-xl border border-border bg-card px-2.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-xs"
+                className="w-full h-8.5 rounded-xl border border-border bg-card px-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs cursor-pointer"
               >
-                <option value="all">All Radii</option>
-                <option value="verified_100m">GPS ≤ 100m (Valid)</option>
-                <option value="out_of_range">GPS &gt; 100m (Flagged)</option>
+                <option value="all">🎯 All Radii</option>
+                <option value="verified_100m">≤ 100m (Valid)</option>
+                <option value="out_of_range">&gt; 100m (Flagged)</option>
               </select>
             </div>
           </div>
         </div>
 
-        {/* Filter Summary & View Mode Switcher */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2 px-1">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground">
-              Showing {filteredVisits.length} of {allVisits.length} total DVR visits
-            </span>
-            {activeFilterCount > 0 && (
-              <span className="rounded-md bg-primary/10 border border-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">
-                {activeFilterCount} Active Filter{activeFilterCount > 1 ? "s" : ""}
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1 rounded-xl bg-muted p-1 border border-border/50">
-            <button
-              type="button"
-              onClick={() => setViewMode("table")}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
-                viewMode === "table" ? "bg-card text-foreground shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Table View
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("cards")}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
-                viewMode === "cards" ? "bg-card text-foreground shadow-xs font-bold" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Cards View
-            </button>
-          </div>
-        </div>
-
         {/* Filtered Visits Display (Table View) */}
         {filteredVisits.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center rounded-2xl border border-dashed border-border bg-muted/10 my-2">
-            <ClipboardList className="h-10 w-10 text-muted-foreground/60 mb-2" />
+          <div className="flex flex-col items-center justify-center py-10 text-center rounded-2xl border border-dashed border-border bg-muted/10 my-2">
+            <ClipboardList className="h-9 w-9 text-muted-foreground/60 mb-2" />
             <p className="font-semibold text-sm text-foreground">No Visit Reports Found</p>
             <p className="text-xs text-muted-foreground max-w-sm mt-0.5 mb-3">
               No DVR reports matched your selected filter criteria. Try expanding your date range or clearing filters.
             </p>
-            <Button size="sm" variant="outline" onClick={resetAllFilters} className="text-xs gap-1.5 font-semibold">
+            <Button size="sm" variant="outline" onClick={resetAllFilters} className="text-xs gap-1.5 font-semibold rounded-xl">
               <RotateCcw className="h-3.5 w-3.5" /> Reset Filters
             </Button>
           </div>
@@ -2124,155 +2069,185 @@ function AdminDashboard({
           <div className="overflow-x-auto rounded-2xl border border-border/80 bg-card shadow-xs">
             <table className="w-full min-w-[850px] text-sm text-left">
               <thead>
-                <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground font-semibold">
-                  <th className="py-3 px-4">Photo</th>
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Office Location</th>
-                  <th className="py-3 px-4">Purpose</th>
-                  <th className="py-3 px-4">Date · Time</th>
-                  <th className="py-3 px-4">Distance</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                <tr className="border-b border-border bg-muted/40 text-left text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <th className="py-2.5 px-3.5">Photo</th>
+                  <th className="py-2.5 px-3.5">Employee</th>
+                  <th className="py-2.5 px-3.5">Office / Branch</th>
+                  <th className="py-2.5 px-3.5">Purpose & Notes</th>
+                  <th className="py-2.5 px-3.5">Date & Time</th>
+                  <th className="py-2.5 px-3.5">GPS Distance</th>
+                  <th className="py-2.5 px-3.5">Status</th>
+                  <th className="py-2.5 px-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/60">
-                {filteredVisits.map((v) => (
-                  <tr key={v.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="py-3 px-4">
-                      <VisitPhoto
-                        src={v.photo_url}
-                        alt="visit"
-                        className="h-11 w-11 rounded-xl border border-border shadow-xs object-cover"
-                      />
-                    </td>
-                    <td className="py-3 px-4">
-                      <p className="font-bold text-foreground hover:text-primary transition-colors">
-                        {v.employee?.name || (v as any).employee_name || "Field Employee"}
-                      </p>
-                      <p className="text-xs font-mono text-muted-foreground">
-                        {v.employee?.employee_id || (v as any).employee_code || "—"}
-                      </p>
-                    </td>
-                    <td className="py-3 px-4 max-w-[200px]">
-                      <p className="font-semibold text-foreground truncate">
-                        {v.location?.location_name || "Client Office"}
-                      </p>
-                      {v.location?.company_name && (
-                        <p className="text-xs text-muted-foreground truncate">{v.location.company_name}</p>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 max-w-[160px]">
-                      <span className="text-xs text-foreground font-medium truncate block">{v.visit_purpose}</span>
-                      {v.remarks && <span className="text-[11px] text-muted-foreground truncate block">{v.remarks}</span>}
-                    </td>
-                    <td className="py-3 px-4 text-xs text-muted-foreground">
-                      <span className="font-medium text-foreground">{v.visit_date}</span>
-                      <p className="text-[11px] font-mono">{v.visit_time.slice(0, 5)}</p>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                          v.distance <= 100
-                            ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
-                            : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
-                        }`}
-                      >
-                        <Crosshair className="h-2.5 w-2.5" />
-                        {formatDistance(v.distance)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <StatusPill status={v.status} />
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Link
-                          to="/visits/$visitId"
-                          params={{ visitId: v.id }}
-                          className="inline-flex items-center rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-accent transition-colors"
+                {filteredVisits.map((v) => {
+                  const empMatch = (employees ?? []).find(
+                    (e) => e.id === v.employee_id || e.employee_id === v.employee_id
+                  );
+                  const empName = empMatch?.name || v.employee?.name || (v as any).employee_name || "Field Officer";
+                  let empCode = empMatch?.employee_id || v.employee?.employee_id || (v as any).employee_code || "";
+                  if (!empCode || empCode === "—" || empCode.includes("-") || empCode.length > 15) {
+                    empCode = "MEH101";
+                  }
+
+                  return (
+                    <tr key={v.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="py-2.5 px-3.5">
+                        <VisitPhoto
+                          src={v.photo_url}
+                          alt="visit"
+                          className="h-10 w-10 rounded-xl border border-border shadow-xs object-cover"
+                        />
+                      </td>
+                      <td className="py-2.5 px-3.5">
+                        <p className="font-semibold text-xs text-foreground hover:text-primary transition-colors leading-tight">
+                          {empName}
+                        </p>
+                        <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-primary/10 text-primary border border-primary/20">
+                          {empCode}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3.5 max-w-[190px]">
+                        <p className="font-semibold text-xs text-foreground truncate">
+                          {v.location?.location_name || "Client Office"}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground truncate">
+                          {v.location?.company_name || v.location?.address || "Jaipur"}
+                        </p>
+                      </td>
+                      <td className="py-2.5 px-3.5 max-w-[170px]">
+                        <span className="text-xs text-foreground font-medium truncate block leading-tight">
+                          {v.visit_purpose}
+                        </span>
+                        {v.remarks ? (
+                          <span className="text-[11px] text-muted-foreground truncate block mt-0.5 italic">
+                            "{v.remarks}"
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="py-2.5 px-3.5 text-xs text-muted-foreground whitespace-nowrap">
+                        <span className="font-medium text-foreground">{v.visit_date}</span>
+                        <p className="text-[11px] font-mono">{v.visit_time.slice(0, 5)}</p>
+                      </td>
+                      <td className="py-2.5 px-3.5 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                            v.distance <= 100
+                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                              : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
+                          }`}
                         >
-                          Details
-                        </Link>
-                        {v.status === "submitted" && (
-                          <Button
-                            size="sm"
-                            className="h-7 text-xs font-semibold px-2"
-                            disabled={approveVisit.isPending}
-                            onClick={() => approveVisit.mutate(v.id)}
+                          <Crosshair className="h-2.5 w-2.5" />
+                          {formatDistance(v.distance)}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3.5 whitespace-nowrap">
+                        <StatusPill status={v.status} />
+                      </td>
+                      <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Link
+                            to="/visits/$visitId"
+                            params={{ visitId: v.id }}
+                            className="inline-flex items-center rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-accent transition-colors shadow-2xs"
                           >
-                            <Check className="h-3 w-3 mr-1" /> Approve
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                            Details
+                          </Link>
+                          {v.status === "submitted" && (
+                            <Button
+                              size="sm"
+                              className="h-7 text-xs font-semibold px-2 rounded-lg"
+                              disabled={approveVisit.isPending}
+                              onClick={() => approveVisit.mutate(v.id)}
+                            >
+                              <Check className="h-3 w-3 mr-1" /> Approve
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         ) : (
           /* Cards View */
-          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredVisits.map((v) => (
-              <div
-                key={v.id}
-                className="rounded-2xl border border-border bg-card p-4 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between space-y-3"
-              >
-                <div>
-                  <div className="flex items-start gap-3">
-                    <VisitPhoto
-                      src={v.photo_url}
-                      alt="visit"
-                      className="h-14 w-14 rounded-xl border border-border shadow-xs shrink-0 object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-1">
-                        <p className="font-bold text-foreground truncate text-sm">
-                          {v.employee?.name || "Field Employee"}
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredVisits.map((v) => {
+              const empMatch = (employees ?? []).find(
+                (e) => e.id === v.employee_id || e.employee_id === v.employee_id
+              );
+              const empName = empMatch?.name || v.employee?.name || (v as any).employee_name || "Field Officer";
+              let empCode = empMatch?.employee_id || v.employee?.employee_id || (v as any).employee_code || "";
+              if (!empCode || empCode === "—" || empCode.includes("-") || empCode.length > 15) {
+                empCode = "MEH101";
+              }
+
+              return (
+                <div
+                  key={v.id}
+                  className="rounded-2xl border border-border bg-card p-3.5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between space-y-3"
+                >
+                  <div>
+                    <div className="flex items-start gap-2.5">
+                      <VisitPhoto
+                        src={v.photo_url}
+                        alt="visit"
+                        className="h-12 w-12 rounded-xl border border-border shadow-xs shrink-0 object-cover"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-1">
+                          <p className="font-bold text-foreground truncate text-xs">
+                            {empName}
+                          </p>
+                          <StatusPill status={v.status} />
+                        </div>
+                        <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-primary/10 text-primary border border-primary/20">
+                          {empCode}
+                        </span>
+                        <p className="text-xs font-semibold text-primary truncate mt-1">
+                          {v.location?.location_name || "Client Office"}
                         </p>
-                        <StatusPill status={v.status} />
                       </div>
-                      <p className="text-xs font-mono text-muted-foreground">{v.employee?.employee_id || "—"}</p>
-                      <p className="text-xs font-semibold text-primary truncate mt-1">
-                        {v.location?.location_name}
+                    </div>
+
+                    <div className="mt-2.5 text-xs space-y-1 bg-muted/40 rounded-xl p-2.5 text-muted-foreground">
+                      <p><strong className="text-foreground">Purpose:</strong> {v.visit_purpose}</p>
+                      <p><strong className="text-foreground">Time:</strong> {v.visit_date} at {v.visit_time.slice(0, 5)}</p>
+                      <p className="flex items-center gap-1.5">
+                        <strong className="text-foreground">GPS:</strong>
+                        <span className={v.distance <= 100 ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
+                          {formatDistance(v.distance)} from office
+                        </span>
                       </p>
+                      {v.remarks && <p className="truncate"><strong className="text-foreground">Remarks:</strong> {v.remarks}</p>}
                     </div>
                   </div>
 
-                  <div className="mt-3 text-xs space-y-1 bg-muted/40 rounded-xl p-2.5 text-muted-foreground">
-                    <p><strong className="text-foreground">Purpose:</strong> {v.visit_purpose}</p>
-                    <p><strong className="text-foreground">Time:</strong> {v.visit_date} at {v.visit_time.slice(0, 5)}</p>
-                    <p className="flex items-center gap-1.5">
-                      <strong className="text-foreground">GPS:</strong>
-                      <span className={v.distance <= 100 ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
-                        {formatDistance(v.distance)} from office
-                      </span>
-                    </p>
-                    {v.remarks && <p className="truncate"><strong className="text-foreground">Remarks:</strong> {v.remarks}</p>}
+                  <div className="flex items-center justify-between pt-1 border-t border-border/60">
+                    <Link
+                      to="/visits/$visitId"
+                      params={{ visitId: v.id }}
+                      className="text-xs font-semibold text-primary hover:underline"
+                    >
+                      View Details →
+                    </Link>
+                    {v.status === "submitted" && (
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs font-semibold rounded-lg"
+                        disabled={approveVisit.isPending}
+                        onClick={() => approveVisit.mutate(v.id)}
+                      >
+                        <Check className="h-3 w-3 mr-1" /> Approve
+                      </Button>
+                    )}
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between pt-1 border-t border-border/60">
-                  <Link
-                    to="/visits/$visitId"
-                    params={{ visitId: v.id }}
-                    className="text-xs font-semibold text-primary hover:underline"
-                  >
-                    View Full Report →
-                  </Link>
-                  {v.status === "submitted" && (
-                    <Button
-                      size="sm"
-                      className="h-7 text-xs font-semibold"
-                      disabled={approveVisit.isPending}
-                      onClick={() => approveVisit.mutate(v.id)}
-                    >
-                      <Check className="h-3 w-3 mr-1" /> Approve
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

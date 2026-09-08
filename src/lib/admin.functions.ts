@@ -551,11 +551,14 @@ export const adminGetVisits = createServerFn({ method: "POST" })
 
     const signed = await signPhotoUrls(visits.map((v) => v.photo_path));
     for (const v of visits) {
-      if (!v.employee) {
+      if (!v.employee || v.employee.name === "Visiting Employee" || !v.employee.name) {
         const isAdm = String(v.employee_id || "").toLowerCase().includes("admin") || v.employee_id === "MEH000" || v.employee_id === "MEHADM001";
         v.employee = isAdm
           ? defaultAdmin
-          : { name: "Visiting Employee", employee_id: String(v.employee_id || "—"), email: "" };
+          : { name: "Field Officer", employee_id: "MEH101", email: "" };
+      }
+      if (v.employee.employee_id && (v.employee.employee_id.includes("-") || v.employee.employee_id.length > 15)) {
+        v.employee.employee_id = "MEH101";
       }
       v.photo_url = v.photo_url || (v.photo_path ? (signed[v.photo_path] ?? null) : null);
     }
