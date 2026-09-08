@@ -20,6 +20,8 @@ export interface MapCircle {
   tone?: "primary" | "success" | "danger" | "muted";
 }
 
+export type TileTheme = "osm" | "dark" | "voyager";
+
 interface LocationMapProps {
   markers?: MapMarker[];
   circles?: MapCircle[];
@@ -29,7 +31,7 @@ interface LocationMapProps {
   center?: [number, number] | undefined;
   zoom?: number;
   fit?: boolean;
-  tileTheme?: "osm" | "dark" | "voyager";
+  tileTheme?: TileTheme;
   interactive?: boolean;
   showControls?: boolean;
 }
@@ -41,7 +43,7 @@ const TONE_COLOR: Record<string, string> = {
   muted: "#64748b",
 };
 
-const TILE_URLS: Record<string, { url: string; attribution: string }> = {
+const TILE_URLS: Record<TileTheme, { url: string; attribution: string }> = {
   osm: {
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -101,7 +103,7 @@ export function LocationMap({
 
       const map = L.map(containerRef.current, mapOptions).setView(center, zoom);
 
-      const tileConfig = TILE_URLS[tileTheme] || TILE_URLS.osm;
+      const tileConfig = TILE_URLS[tileTheme] ?? TILE_URLS["osm"];
       L.tileLayer(tileConfig.url, {
         attribution: tileConfig.attribution,
         maxZoom: 19,
