@@ -1,6 +1,5 @@
 # ==========================================
 # Mehar DVR Frontend - Production Dockerfile
-# TanStack Start SSR & Client Runtime
 # ==========================================
 
 # Stage 1: Build stage
@@ -16,7 +15,7 @@ ENV VITE_API_URL=${VITE_API_URL}
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
-# Copy source code and build production server & client bundle
+# Copy source code and build production bundle
 COPY . ./
 RUN npm run build
 
@@ -28,19 +27,18 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
-ENV NITRO_HOST=0.0.0.0
-ENV NITRO_PORT=3000
 
-# Copy built server output and assets from builder stage
-COPY --from=builder /app/.output ./.output
+# Copy built files and dependencies from builder stage
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
 
-# Expose TanStack Start SSR port
+# Expose production port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
-# Launch TanStack Start server
-CMD ["node", ".output/server/index.mjs"]
+# Start TanStack Start production server
+CMD ["node", "dist/server/server.js"]
