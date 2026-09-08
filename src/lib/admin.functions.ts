@@ -464,7 +464,7 @@ export const adminClearAllFieldEmployees = createServerFn({ method: "POST" })
 export const adminGetVisits = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) =>
-    visitFiltersSchema.extend({ employeeId: z.string().uuid().optional() }).parse(input ?? {}),
+    visitFiltersSchema.parse(input ?? {}),
   )
   .handler(async ({ data, context }): Promise<VisitWithRefs[]> => {
     try {
@@ -559,7 +559,44 @@ export const adminGetVisits = createServerFn({ method: "POST" })
       }
       v.photo_url = v.photo_url || (v.photo_path ? (signed[v.photo_path] ?? null) : null);
     }
-    return visits;
+
+    let filtered = visits;
+    if (data?.status) {
+      filtered = filtered.filter((v) => v.status === data.status);
+    }
+    if (data?.locationId) {
+      filtered = filtered.filter((v) => v.location_id === data.locationId || v.location?.id === data.locationId);
+    }
+    if (data?.employeeId) {
+      filtered = filtered.filter((v) => v.employee_id === data.employeeId || (v.employee as any)?.id === data.employeeId || v.employee?.employee_id === data.employeeId);
+    }
+    if (data?.from) {
+      filtered = filtered.filter((v) => (v.visit_date || "").slice(0, 10) >= data.from!);
+    }
+    if (data?.to) {
+      filtered = filtered.filter((v) => (v.visit_date || "").slice(0, 10) <= data.to!);
+    }
+    if (data?.search) {
+      const q = data.search.trim().toLowerCase();
+      filtered = filtered.filter((v) => {
+        const empName = (v.employee?.name || "").toLowerCase();
+        const empCode = (v.employee?.employee_id || "").toLowerCase();
+        const locName = (v.location?.location_name || "").toLowerCase();
+        const compName = (v.location?.company_name || "").toLowerCase();
+        const purpose = (v.visit_purpose || "").toLowerCase();
+        const remarks = (v.remarks || "").toLowerCase();
+        return (
+          empName.includes(q) ||
+          empCode.includes(q) ||
+          locName.includes(q) ||
+          compName.includes(q) ||
+          purpose.includes(q) ||
+          remarks.includes(q)
+        );
+      });
+    }
+
+    return filtered;
   });
 
 export const adminDeleteVisit = createServerFn({ method: "POST" })
