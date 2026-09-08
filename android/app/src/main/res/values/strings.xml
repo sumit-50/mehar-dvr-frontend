@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DVR Mehar</string>
+    <string name="title_activity_main">DVR Mehar</string>
+    <string name="package_name">com.dvrmehar.app</string>
+    <string name="custom_url_scheme">com.dvrmehar.app</string>
+</resources>
