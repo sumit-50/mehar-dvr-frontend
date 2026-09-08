@@ -380,11 +380,41 @@ function AuthPage() {
 
     setSignUpLoading(true);
     try {
-      await sendSignUpVerificationOtp({
-        data: {
-          phone: cleanDigits,
-        },
-      });
+      let sentSuccessfully = false;
+      let errorResponse = null;
+
+      // 1. Call REST API /auth/send-otp on live backend (Zectagon SMS Gateway)
+      try {
+        const res = await apiFetch("/auth/send-otp", {
+          method: "POST",
+          body: {
+            phone: cleanDigits,
+            mobile: cleanDigits,
+            purpose: "signup",
+          },
+        });
+        if (res?.success) {
+          sentSuccessfully = true;
+        } else if (res?.error) {
+          errorResponse = res.error;
+        }
+      } catch (restErr: any) {
+        errorResponse = restErr?.message;
+      }
+
+      if (!sentSuccessfully) {
+        // 2. Fallback to server function
+        try {
+          await sendSignUpVerificationOtp({
+            data: {
+              phone: cleanDigits,
+            },
+          });
+          sentSuccessfully = true;
+        } catch (fnErr: any) {
+          throw new Error(errorResponse || fnErr?.message || "Failed to send verification code. Please try again.");
+        }
+      }
 
       setSignUpStep("otp");
       setResendTimer(30);
@@ -1016,7 +1046,17 @@ function AuthPage() {
                             }
                             setOtpLoginLoading(true);
                             try {
-                              await sendSignUpVerificationOtp({ data: { phone: clean } });
+                              let sent = false;
+                              try {
+                                const res = await apiFetch("/auth/send-otp", {
+                                  method: "POST",
+                                  body: { phone: clean, mobile: clean, purpose: "login" },
+                                });
+                                if (res?.success) sent = true;
+                              } catch {}
+                              if (!sent) {
+                                await sendSignUpVerificationOtp({ data: { phone: clean } });
+                              }
                               setOtpLoginStep("otp");
                               setResendTimer(30);
                               toast.success(`OTP sent to +91 ${clean}!`);
@@ -1036,6 +1076,15 @@ function AuthPage() {
                             }
                             setOtpLoginLoading(true);
                             try {
+                              let verified = false;
+                              try {
+                                const vRes = await apiFetch("/auth/verify-otp", {
+                                  method: "POST",
+                                  body: { phone: clean, otp: otpLoginCode.trim(), purpose: "login" },
+                                });
+                                if (vRes?.success) verified = true;
+                              } catch {}
+
                               try {
                                 const res = await apiFetch("/auth/login", {
                                   method: "POST",
@@ -1045,9 +1094,17 @@ function AuthPage() {
                                   localStorage.setItem("dvr_token", res.token);
                                   localStorage.setItem("token", res.token);
                                 }
+                                if (res?.user) {
+                                  if (res.user.full_name) localStorage.setItem("dvr_user_name", res.user.full_name);
+                                  if (res.user.employee_id) localStorage.setItem("dvr_user_id", res.user.employee_id);
+                                  if (res.user.role) localStorage.setItem("dvr_user_role", res.user.role);
+                                }
                               } catch {}
 
-                              localStorage.setItem("dvr_token", "mehar_session_active");
+                              localStorage.setItem("dvr_user_phone", clean);
+                              if (!localStorage.getItem("dvr_token")) {
+                                localStorage.setItem("dvr_token", "mehar_session_active");
+                              }
                               sessionStorage.setItem("mehar_alive", "1");
                               toast.success("Mobile Verified! Logging you in...");
                               navigate({ to: "/dashboard" });
