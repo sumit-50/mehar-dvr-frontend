@@ -815,22 +815,11 @@ export const getMyVisits = createServerFn({ method: "POST" })
     const { isVisitDeleted, getCustomVisits, getCustomLocations } = await import("./dvr.server");
     const rowsMap = new Map<string, any>();
 
-    // 1. Load from PostgreSQL
+    // 1. Load from PostgreSQL via backend API
     try {
-      const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
-      if (pool) {
-        const pgVisits = await pool.query(`
-          SELECT v.*, l.name as loc_name, l.address as loc_address, l.latitude as loc_lat, l.longitude as loc_lng,
-                 p.full_name as emp_name, p.employee_id as emp_code, p.email as emp_email
-          FROM visits v
-          LEFT JOIN locations l ON v.location_id = l.id
-          LEFT JOIN profiles p ON v.employee_id = p.id
-          WHERE v.employee_id = $1
-          ORDER BY v.created_at DESC
-          LIMIT 300
-        `, [userId]);
-
-        for (const row of pgVisits.rows) {
+      const restVisits = await apiFetch("/dvr/my-visits");
+      if (Array.isArray(restVisits)) {
+        for (const row of restVisits) {
           if (!isVisitDeleted(row.id, row.employee_id)) {
             rowsMap.set(row.id, {
               id: row.id,
@@ -846,24 +835,26 @@ export const getMyVisits = createServerFn({ method: "POST" })
               distance_meters: Number(row.distance_meters) || 0,
               status: row.is_verified ? "verified" : "submitted",
               created_at: row.created_at || new Date().toISOString(),
-              location: row.location_id ? {
+              location: {
                 id: row.location_id,
-                location_name: row.loc_name || "Client Location",
-                address: row.loc_address || "",
-                latitude: Number(row.loc_lat) || 0,
-                longitude: Number(row.loc_lng) || 0,
+                location_name: row.location_name || "Client Location",
+                address: row.location_address || "",
+                latitude: Number(row.latitude) || 0,
+                longitude: Number(row.longitude) || 0,
                 status: "active",
-              } : null,
+              },
               employee: {
-                name: row.emp_name || "Employee",
-                employee_id: row.emp_code || "MEH101",
-                email: row.emp_email || "",
+                name: row.employee_name || "Employee",
+                employee_id: row.employee_code || "MEH101",
+                email: row.employee_email || "",
               },
             });
           }
         }
       }
-    } catch {}
+    } catch (apiErr) {
+      console.warn("Notice: REST getMyVisits fetch:", apiErr);
+    }
 
     // 2. Merge custom store visits
     const customVisits = getCustomVisits().filter((cv) => cv.employee_id === userId);
@@ -1053,28 +1044,22 @@ export const submitVisit = createServerFn({ method: "POST" })
 
     saveCustomVisit(visitPayload);
 
-    // Save to PostgreSQL DB
+    // Save directly to backend PostgreSQL API
     try {
-      const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
-      if (pool) {
-        await pool.query(
-          `INSERT INTO visits (id, employee_id, location_id, purpose, remarks, latitude, longitude, distance_meters, photo_url, is_verified, created_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true, NOW())`,
-          [
-            visitId,
-            userId,
-            location.id,
-            purpose,
-            data.remarks?.trim() || null,
-            data.actualLatitude,
-            data.actualLongitude,
-            Math.round(distance),
-            photoPath,
-          ]
-        );
-      }
-    } catch (pgErr) {
-      console.warn("Notice: PG visit insert:", pgErr);
+      await apiFetch("/dvr/visits", {
+        method: "POST",
+        body: {
+          location_id: location.id,
+          purpose,
+          remarks: data.remarks?.trim() || null,
+          latitude: data.actualLatitude,
+          longitude: data.actualLongitude,
+          gps_accuracy: data.gpsAccuracy,
+          photo: photoPath,
+        },
+      });
+    } catch (apiErr) {
+      console.warn("Notice: REST API visit persist:", apiErr);
     }
 
     return { ok: true, id: visitId };

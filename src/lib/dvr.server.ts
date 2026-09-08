@@ -169,7 +169,7 @@ export async function requireAdmin(userId: string): Promise<void> {
   }
 
   try {
-    const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
+    const { pool } = await import("./db").catch(() => ({ pool: null }));
     if (pool) {
       const pgUser = await pool.query(
         "SELECT id, email, employee_id, role FROM profiles WHERE id = $1 OR employee_id = $1 OR email = $1",
