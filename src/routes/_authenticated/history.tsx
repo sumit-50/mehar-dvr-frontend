@@ -87,8 +87,8 @@ function HistoryPage() {
       await queryClient.cancelQueries({ queryKey: ["my-visits"] });
       queryClient.setQueriesData({ queryKey: ["my-visits"] }, () => []);
     },
-    onSuccess: async (res) => {
-      toast.success(`Removed all (${res.deletedVisits}) visit entries!`);
+    onSuccess: async () => {
+      toast.success("Removed all visit entries!");
       setShowClearAllConfirm(false);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["my-visits"] }),

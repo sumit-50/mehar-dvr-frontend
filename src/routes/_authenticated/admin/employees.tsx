@@ -239,7 +239,7 @@ function AdminEmployeesPage() {
 
   function openAssign(emp: EmployeeWithAssignments) {
     setAssignFor(emp);
-    setChecked(new Set(emp.location_ids));
+    setChecked(new Set(emp.location_ids ?? []));
   }
 
   const [filterRole, setFilterRole] = useState<"all" | "admin" | "accountant" | "employee">("all");
@@ -522,7 +522,7 @@ function AdminEmployeesPage() {
                           ) : (
                             <span className="inline-flex items-center gap-1 font-semibold text-muted-foreground">
                               <MapPin className="h-3 w-3 text-primary" />
-                              {emp.location_ids.length} Location(s)
+                              {(emp.location_ids ?? []).length} Location(s)
                             </span>
                           )}
                         </td>
@@ -647,7 +647,7 @@ function AdminEmployeesPage() {
                       {isAdmin || isAccountant ? (
                         <strong className="text-foreground">Global Access (All Locations)</strong>
                       ) : (
-                        <span><strong>{emp.location_ids.length}</strong> locations · <strong>{emp.total_visits}</strong> visits</span>
+                        <span><strong>{(emp.location_ids ?? []).length}</strong> locations · <strong>{emp.total_visits ?? 0}</strong> visits</span>
                       )}
                     </span>
                     {!isAdmin ? (
@@ -674,7 +674,7 @@ function AdminEmployeesPage() {
                           className="flex-1 font-semibold text-xs"
                           onClick={() => openAssign(emp)}
                         >
-                          Assign locations ({emp.location_ids.length})
+                          Assign locations ({(emp.location_ids ?? []).length})
                         </Button>
                       )}
                       <Button
