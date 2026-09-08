@@ -70,17 +70,12 @@ export const identifierSchema = z.object({
 export const officeRequestSchema = z.object({
   companyName: z.string().trim().min(2, "Company name is required").max(120),
   officeName: z.string().trim().min(2, "Office / branch name is required").max(120),
-  companyDescription: z.string().trim().min(2, "Company description is required"),
-  ownerName: z.string().trim().min(2, "Owner name is required").max(80),
-  ownerNumber: z
-    .string()
-    .trim()
-    .min(6, "Owner number is required")
-    .max(15)
-    .regex(/^[0-9+\-\s()]+$/, "Enter a valid phone number"),
+  companyDescription: z.string().trim().max(300).optional().default(""),
+  ownerName: z.string().trim().max(80).optional().default(""),
+  ownerNumber: z.string().trim().max(20).optional().default(""),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
-  gpsAccuracy: z.number().min(0).max(10000),
+  gpsAccuracy: z.number().min(0).max(10000).optional().default(15),
 });
 export type OfficeRequestInput = z.infer<typeof officeRequestSchema>;
 
@@ -89,20 +84,15 @@ export const officeGpsSchema = z.object({
   locationId: z.string().min(1),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
-  gpsAccuracy: z.number().min(0).max(10000),
+  gpsAccuracy: z.number().min(0).max(10000).optional().default(15),
 });
 
 /** One-time office details (owner + description) filled for admin review — pending offices only. */
 export const officeDetailsSchema = z.object({
   locationId: z.string().min(1),
-  companyDescription: z.string().trim().min(2, "Company description is required"),
-  ownerName: z.string().trim().min(2, "Owner name is required").max(80),
-  ownerNumber: z
-    .string()
-    .trim()
-    .min(6, "Owner number is required")
-    .max(15)
-    .regex(/^[0-9+\-\s()]+$/, "Enter a valid phone number"),
+  companyDescription: z.string().trim().max(300).optional().default(""),
+  ownerName: z.string().trim().max(80).optional().default(""),
+  ownerNumber: z.string().trim().max(20).optional().default(""),
 });
 
 export function isKnownPurpose(purpose: string): boolean {

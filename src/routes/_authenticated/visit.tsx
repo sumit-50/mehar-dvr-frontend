@@ -64,7 +64,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { cn, formatErrorMessage } from "@/lib/utils";
 import { stampPhotoWithWatermark, type WatermarkData } from "@/lib/watermark";
 
 export const Route = createFileRoute("/_authenticated/visit")({
@@ -299,7 +299,7 @@ function VisitPage() {
       });
     },
     onError: (err: any) => {
-      toast.error(err.message || "Failed to add office");
+      toast.error(formatErrorMessage(err));
     },
   });
 
@@ -369,7 +369,7 @@ function VisitPage() {
       navigate({ to: "/dashboard" });
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Could not submit visit");
+      toast.error(formatErrorMessage(err));
     },
   });
 
@@ -1277,7 +1277,7 @@ function VisitPage() {
                           toast.success(`📍 Added & Selected: ${compName}`);
                           setAddOfficeOpen(false);
                         } catch (err: any) {
-                          toast.error(err.message || "Added location to visit list.");
+                          toast.error(formatErrorMessage(err));
                           setAddOfficeOpen(false);
                         }
                       }}
