@@ -17,6 +17,7 @@ const MIME_TYPES = {
   ".mjs": "application/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
@@ -60,9 +61,10 @@ const server = http.createServer(async (req, res) => {
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
+    const isPwaMeta = pathname === "/sw.js" || pathname === "/manifest.json" || pathname === "/manifest.webmanifest";
     res.writeHead(200, {
       "Content-Type": contentType,
-      "Cache-Control": ext === ".html" ? "no-cache" : "public, max-age=31536000, immutable",
+      "Cache-Control": (ext === ".html" || isPwaMeta) ? "no-cache, no-store, must-revalidate" : "public, max-age=31536000, immutable",
     });
     fs.createReadStream(filePath).pipe(res);
     return;

@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 import appCss from "../styles.css?url";
 import { isAuthError, recoverFromExpiredSession } from "../lib/session-expiry";
@@ -100,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
       { title: "Mehar DVR — Daily Visit Report" },
       {
         name: "description",
@@ -108,6 +109,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Mehar DVR verifies employee field visits with GPS radius checks, live camera photos and permanent location watermarks.",
       },
       { name: "author", content: "Mehar Advisory" },
+      { name: "theme-color", content: "#0f172a" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Mehar DVR" },
+      { name: "application-name", content: "Mehar DVR" },
+      { name: "format-detection", content: "telephone=no" },
       { property: "og:title", content: "Mehar DVR — Daily Visit Report" },
       {
         property: "og:description",
@@ -118,8 +126,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      { rel: "manifest", href: "/manifest.json" },
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/logo.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/favicon.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/favicon.png" },
+      { rel: "apple-touch-icon", sizes: "192x192", href: "/favicon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -152,6 +164,22 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
 
+  // Register PWA Service Worker
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((reg) => {
+            console.log("PWA Service Worker registered:", reg.scope);
+          })
+          .catch((err) => {
+            console.debug("PWA Service Worker registration skipped:", err);
+          });
+      });
+    }
+  }, []);
+
   // Honour "Remember me = off": clear the persisted session once the browser
   // was fully closed (sessionStorage gone) since login.
   useEffect(() => {
@@ -179,6 +207,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <PWAInstallPrompt />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
