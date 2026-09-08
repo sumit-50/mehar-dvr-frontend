@@ -168,7 +168,6 @@ export function AppLayout() {
               </span>
             </div>
           </Link>
-          {isAdmin && <AdminNotificationCenter className="h-8.5 w-8.5" />}
         </div>
 
         {/* Navigation */}
