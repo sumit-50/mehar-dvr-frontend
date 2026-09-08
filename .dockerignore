@@ -1,0 +1,12 @@
+node_modules
+dist
+.output
+.vinxi
+.tanstack
+.env
+.env.*
+!.env.example
+npm-debug.log*
+.git
+.gitignore
+android
