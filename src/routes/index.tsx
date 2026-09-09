@@ -14,38 +14,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import logoAsset from "@/assets/mehar-logo.png.asset.json";
-import { LocationMap, type MapCircle, type MapMarker } from "@/components/LocationMap";
 
 const logoUrl = logoAsset.url;
-
-const heroCenter: [number, number] = [26.905, 75.79];
-const heroCircles: MapCircle[] = [
-  {
-    id: "hero-fence",
-    lat: 26.905,
-    lng: 75.79,
-    radius: 100,
-    tone: "success",
-  },
-];
-const heroMarkers: MapMarker[] = [
-  {
-    id: "hero-hq",
-    lat: 26.905,
-    lng: 75.79,
-    title: "Mehar Advisory HQ",
-    tone: "primary",
-    label: "HQ",
-  },
-  {
-    id: "hero-rep",
-    lat: 26.90528,
-    lng: 75.7903,
-    title: "Rajesh Kumar (38m away)",
-    tone: "success",
-    label: "38m",
-  },
-];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -172,6 +142,9 @@ function LandingPage() {
               <img
                 src={logoUrl}
                 alt="Mehar DVR logo"
+                width={40}
+                height={40}
+                fetchPriority="high"
                 className="h-10 w-10 rounded-xl bg-white object-contain p-1 shadow-sm ring-1 ring-border/80"
               />
               <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-background">
@@ -193,14 +166,14 @@ function LandingPage() {
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-muted-foreground">
-            <a href="#features" className="transition hover:text-primary">
+          <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-7 text-sm font-medium text-muted-foreground">
+            <a href="#features" aria-label="View Features" className="transition hover:text-primary">
               Features
             </a>
-            <a href="#how-it-works" className="transition hover:text-primary">
+            <a href="#how-it-works" aria-label="View How It Works" className="transition hover:text-primary">
               How It Works
             </a>
-            <a href="#demo-preview" className="transition hover:text-primary">
+            <a href="#demo-preview" aria-label="View Live Preview" className="transition hover:text-primary">
               Live Preview
             </a>
           </nav>
@@ -208,6 +181,7 @@ function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/auth"
+              aria-label="Open Mehar DVR Portal"
               className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 active:scale-[0.98]"
             >
               <span>Open Portal</span>
@@ -258,6 +232,7 @@ function LandingPage() {
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-4 pt-2 max-w-md mx-auto lg:mx-0">
                   <Link
                     to="/auth"
+                    aria-label="Launch Mehar DVR Portal"
                     className="relative group overflow-hidden inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary via-blue-600 to-indigo-600 px-7 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <span>Launch DVR Portal</span>
@@ -266,6 +241,7 @@ function LandingPage() {
 
                   <a
                     href="#how-it-works"
+                    aria-label="Learn how Mehar DVR works"
                     className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-6 py-3.5 text-base font-semibold text-foreground backdrop-blur-md shadow-sm transition-all duration-300 hover:bg-accent hover:border-primary/40"
                   >
                     <Eye className="h-4 w-4 text-primary" />
@@ -328,25 +304,40 @@ function LandingPage() {
                       {/* Camera / GPS Map Viewfinder Area */}
                       <div className="relative aspect-[4/3.2] w-full overflow-hidden bg-slate-950 p-3 flex flex-col justify-between">
                         
-                        {/* Live Geo-Map Layer */}
-                        <div className="absolute inset-0 z-0">
-                          <LocationMap
-                            center={heroCenter}
-                            zoom={16}
-                            tileTheme="dark"
-                            interactive={false}
-                            showControls={false}
-                            className="w-full h-full"
-                            style={{ minHeight: "100%", height: "100%", borderRadius: 0 }}
-                            circles={heroCircles}
-                            markers={heroMarkers}
-                          />
+                        {/* High-Performance Instant Vector Geo-Radar Layer */}
+                        <div className="absolute inset-0 z-0 bg-slate-950 overflow-hidden">
+                          {/* Radial Ambient Grid */}
+                          <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
+                          
+                          {/* 100m Geofence Radius Circles */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="h-48 w-48 rounded-full border border-emerald-500/20 bg-emerald-500/5 animate-pulse" />
+                            <div className="absolute h-32 w-32 rounded-full border-2 border-dashed border-emerald-400/50 bg-emerald-500/10" />
+                            <div className="absolute h-16 w-16 rounded-full border border-sky-400/30" />
+                          </div>
+
+                          {/* Center HQ Landmark Node */}
+                          <div className="absolute top-[48%] left-[48%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+                            <div className="h-4 w-4 rounded-full bg-blue-500 border-2 border-white shadow-lg flex items-center justify-center">
+                              <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                            </div>
+                            <span className="text-[8px] font-mono font-bold bg-slate-900/90 text-sky-400 px-1 rounded mt-0.5 border border-sky-500/30">HQ</span>
+                          </div>
+
+                          {/* Live Employee Node (38m away) */}
+                          <div className="absolute top-[38%] left-[58%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center animate-bounce">
+                            <div className="h-4 w-4 rounded-full bg-emerald-400 border-2 border-white shadow-lg flex items-center justify-center">
+                              <div className="h-1.5 w-1.5 rounded-full bg-slate-950 animate-ping" />
+                            </div>
+                            <span className="text-[8px] font-mono font-bold bg-emerald-950 text-emerald-300 px-1 rounded mt-0.5 border border-emerald-400/40">38m</span>
+                          </div>
+
                           {/* Dark overlay for optimal text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-slate-950/60 pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-slate-950/60 pointer-events-none" />
                         </div>
 
                         {/* Crosshairs & Radar Reticle Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none z-10">
+                        <div className="absolute inset-0 flex items-center justify-center opacity-35 pointer-events-none z-10">
                           <div className="h-28 w-28 border border-emerald-400/60 rounded-2xl flex items-center justify-center relative">
                             <div className="h-2 w-2 bg-emerald-400 rounded-full animate-ping" />
                             <div className="absolute -top-1 -left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-emerald-400" />
@@ -560,6 +551,8 @@ function LandingPage() {
               <img
                 src={logoUrl}
                 alt="Mehar DVR logo"
+                width={32}
+                height={32}
                 className="h-8 w-8 rounded-lg bg-white object-contain p-1 ring-1 ring-border"
               />
               <div>
@@ -572,20 +565,20 @@ function LandingPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-medium">
-              <a href="#features" className="hover:text-primary transition-colors">
+            <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-6 text-xs text-muted-foreground font-medium">
+              <a href="#features" aria-label="Features section" className="hover:text-primary transition-colors">
                 Features
               </a>
-              <a href="#how-it-works" className="hover:text-primary transition-colors">
+              <a href="#how-it-works" aria-label="How it works section" className="hover:text-primary transition-colors">
                 How It Works
               </a>
-              <Link to="/auth" className="hover:text-primary transition-colors">
+              <Link to="/auth" aria-label="Employee login" className="hover:text-primary transition-colors">
                 Employee Login
               </Link>
-              <Link to="/auth" className="hover:text-primary transition-colors">
+              <Link to="/auth" aria-label="Admin console" className="hover:text-primary transition-colors">
                 Admin Console
               </Link>
-            </div>
+            </nav>
 
             <p className="text-xs text-muted-foreground text-center md:text-right">
               © {new Date().getFullYear()} Mehar Advisory. All rights reserved.

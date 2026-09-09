@@ -505,6 +505,9 @@ function AuthPage() {
               <img
                 src={logoUrl}
                 alt="Mehar DVR logo"
+                width={44}
+                height={44}
+                fetchPriority="high"
                 className="h-11 w-11 rounded-2xl bg-white object-contain p-1.5 shadow-md ring-2 ring-sky-200 transition-transform group-hover:scale-105"
               />
               <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white">
@@ -595,6 +598,8 @@ function AuthPage() {
             <img
               src={logoUrl}
               alt="Mehar DVR logo"
+              width={36}
+              height={36}
               className="h-9 w-9 rounded-xl bg-white object-contain p-1 ring-1 ring-sky-200 shadow-2xs"
             />
             <div>

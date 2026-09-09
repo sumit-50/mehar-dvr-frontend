@@ -15,6 +15,27 @@ export default defineConfig({
   server: {
     host: true,
   },
+  build: {
+    target: "esnext",
+    cssMinify: true,
+    minify: "esbuild",
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules/leaflet")) {
+            return "leaflet-vendor";
+          }
+          if (id.includes("node_modules/lucide-react")) {
+            return "icons-vendor";
+          }
+          if (id.includes("node_modules/@tanstack/react-query")) {
+            return "query-vendor";
+          }
+          return undefined;
+        },
+      },
+    },
+  },
   resolve: {
     alias: {
       "@": "/src",
