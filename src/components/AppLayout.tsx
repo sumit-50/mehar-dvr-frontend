@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { getSessionInfo } from "@/lib/dvr.functions";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { AdminNotificationCenter } from "@/components/AdminNotificationCenter";
@@ -89,6 +90,7 @@ export function AppLayout() {
   const localEmail = typeof window !== "undefined" ? localStorage.getItem("dvr_user_email") : null;
   const localId = typeof window !== "undefined" ? localStorage.getItem("dvr_user_id") : null;
   const localName = typeof window !== "undefined" ? localStorage.getItem("dvr_user_name") : null;
+  const localAvatar = typeof window !== "undefined" ? localStorage.getItem("dvr_user_avatar") : null;
 
   const isLocalStorageAdmin =
     localRole === "admin" ||
@@ -112,20 +114,27 @@ export function AppLayout() {
     resolvedEmpId = isAdmin ? "MEHADM001" : "MEH101";
   }
 
-  const nav = isAdmin ? adminNav : employeeNav;
+  const activeAvatarUrl = session?.avatarUrl || session?.profile?.avatar_url || localAvatar || null;
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     localStorage.removeItem("dvr_token");
+    localStorage.removeItem("dvr_token_type");
     localStorage.removeItem("token");
-    localStorage.removeItem("dvr_user_role");
     localStorage.removeItem("dvr_user_id");
     localStorage.removeItem("dvr_user_name");
     localStorage.removeItem("dvr_user_email");
+    localStorage.removeItem("dvr_user_phone");
+    localStorage.removeItem("dvr_user_role");
+    localStorage.removeItem("dvr_user_avatar");
     sessionStorage.removeItem("mehar_alive");
+    sessionStorage.clear();
+    toast.success("Signed out successfully");
     navigate({ to: "/auth", replace: true });
   }
+
+  const nav = isAdmin ? adminNav : employeeNav;
 
   const navLink = (
     item: (typeof adminNav)[number] | (typeof employeeNav)[number],
@@ -148,30 +157,23 @@ export function AppLayout() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-card/95 backdrop-blur-md md:flex shadow-xs">
-        {/* Brand header */}
-        <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-          <Link to="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-            <img
-              src={logoUrl}
-              alt="Mehar DVR logo"
-              className="h-8 w-8 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-border transition-transform group-hover:scale-105"
-            />
-            <div className="leading-tight min-w-0">
-              <span className="font-display text-sm font-bold tracking-tight text-foreground block truncate">
-                MEHAR DVR
-              </span>
-              <span className="text-[10px] text-muted-foreground font-medium block truncate">
-                {isAdmin ? "Super Admin Portal" : "Field Reporting"}
-              </span>
-            </div>
-          </Link>
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-sidebar-border bg-sidebar flex-col md:flex shadow-soft">
+        <div className="flex items-center gap-3 border-b border-sidebar-border px-6 py-5">
+          <img
+            src={logoUrl}
+            alt="Mehar DVR logo"
+            className="h-10 w-10 rounded-xl bg-white object-contain p-1 ring-1 ring-border shadow-xs"
+          />
+          <div>
+            <p className="font-display text-sm font-bold leading-none tracking-tight">MEHAR DVR</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Daily Visit Report</p>
+          </div>
         </div>
 
-        {/* Navigation */}
-        <div className="px-3 pt-3 pb-1">
+        {/* Section title */}
+        <div className="px-6 pt-4 pb-1">
           <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {isAdmin ? "Super Admin Panel" : "Navigation"}
           </p>
@@ -181,15 +183,21 @@ export function AppLayout() {
         {/* User Card & Sign out Footer */}
         <div className="border-t border-sidebar-border/80 p-3.5 bg-gradient-to-b from-transparent to-muted/30">
           {isAdmin ? (
-            <div className="mb-2.5 flex items-center gap-3 rounded-2xl border border-border/80 bg-card/90 p-3 shadow-sm backdrop-blur-sm">
+            <Link
+              to="/profile"
+              className="group mb-2.5 flex items-center gap-3 rounded-2xl border border-border/80 bg-card/90 p-3 shadow-sm backdrop-blur-sm transition-all hover:border-primary/40 hover:bg-primary/5 hover:shadow-soft"
+              title="View & edit profile"
+            >
               <div className="relative shrink-0">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 font-bold text-white shadow-md shadow-blue-500/20 text-xs">
-                  {initials(resolvedName)}
-                </div>
+                <UserAvatar
+                  url={activeAvatarUrl}
+                  name={resolvedName}
+                  className="h-10 w-10 text-xs"
+                />
                 <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-card" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-bold text-foreground">
+                <p className="truncate text-xs font-bold text-foreground group-hover:text-primary transition-colors">
                   {resolvedName}
                 </p>
                 <div className="flex items-center gap-1.5 mt-1">
@@ -201,7 +209,7 @@ export function AppLayout() {
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ) : (
             <Link
               to="/profile"
@@ -209,7 +217,7 @@ export function AppLayout() {
             >
               <div className="relative shrink-0">
                 <UserAvatar
-                  url={session?.avatarUrl}
+                  url={activeAvatarUrl}
                   name={resolvedName}
                   className="h-10 w-10 text-xs"
                 />
@@ -264,35 +272,23 @@ export function AppLayout() {
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72 p-4 pt-safe">
-              {session?.isAdmin ? (
-                <div className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1">
-                  <UserAvatar name={resolvedName} className="h-10 w-10 text-sm" />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{resolvedName}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {resolvedEmpId} · Admin
-                    </p>
-                  </div>
+              <Link
+                to="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-accent"
+              >
+                <UserAvatar
+                  url={activeAvatarUrl}
+                  name={resolvedName}
+                  className="h-10 w-10 text-sm"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{resolvedName}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {resolvedEmpId} {isAdmin ? "· Admin" : "· Field Staff"}
+                  </p>
                 </div>
-              ) : (
-                <Link
-                  to="/profile"
-                  onClick={() => setMenuOpen(false)}
-                  className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-accent"
-                >
-                  <UserAvatar
-                    url={session?.avatarUrl}
-                    name={resolvedName}
-                    className="h-10 w-10 text-sm"
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold">{resolvedName}</p>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {resolvedEmpId}
-                    </p>
-                  </div>
-                </Link>
-              )}
+              </Link>
               <nav className="space-y-1">{nav.map((item) => navLink(item, () => setMenuOpen(false)))}</nav>
             </SheetContent>
           </Sheet>

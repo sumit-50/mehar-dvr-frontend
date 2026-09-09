@@ -224,7 +224,7 @@ export const adminGetEmployees = createServerFn({ method: "POST" })
       const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
       if (pool) {
         const pgRes = await pool.query(
-          "SELECT id, email, full_name, employee_id, phone, role, is_active, created_at FROM profiles ORDER BY created_at DESC"
+          "SELECT id, email, full_name, employee_id, phone, role, avatar_url, is_active, created_at FROM profiles ORDER BY created_at DESC"
         );
         for (const row of pgRes.rows) {
           const isRowAdmin = row.role === "admin" || row.employee_id === "MEH000" || row.employee_id === "MEH-ADM-001" || row.employee_id === "MEHADM001" || row.email?.toLowerCase().includes("admin");
@@ -244,6 +244,7 @@ export const adminGetEmployees = createServerFn({ method: "POST" })
             if ((!existing.name || existing.name === "Employee") && row.full_name) existing.name = row.full_name;
             if (!existing.email && row.email) existing.email = row.email;
             if (!existing.employee_id || existing.employee_id === "MEH000" || existing.employee_id === "MEH101") existing.employee_id = empId;
+            if (row.avatar_url) existing.avatar_url = row.avatar_url;
             existing.status = row.is_active ? "active" : "inactive";
           } else {
             userMap.set(key, {
@@ -252,7 +253,7 @@ export const adminGetEmployees = createServerFn({ method: "POST" })
               email: row.email,
               employee_id: empId,
               phone: cleanPhone,
-              avatar_url: null,
+              avatar_url: row.avatar_url || null,
               status: row.is_active ? "active" : "inactive",
               role: row.role || (isRowAdmin ? "admin" : "employee"),
               roles: rowRoles,

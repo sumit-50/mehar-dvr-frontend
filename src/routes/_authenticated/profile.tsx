@@ -35,18 +35,36 @@ function initials(name?: string | null): string {
 
 /** Center-crop + resize any image file to a small square JPEG data URL. */
 async function fileToAvatarDataUrl(file: File, size = 256): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const side = Math.min(bitmap.width, bitmap.height);
-  const sx = (bitmap.width - side) / 2;
-  const sy = (bitmap.height - side) / 2;
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Could not process this image");
-  ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, size, size);
-  bitmap.close();
-  return canvas.toDataURL("image/jpeg", 0.85);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side) / 2;
+          const sy = (img.height - side) / 2;
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(src);
+            return;
+          }
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+          resolve(canvas.toDataURL("image/jpeg", 0.85));
+        } catch {
+          resolve(src);
+        }
+      };
+      img.onerror = () => reject(new Error("Failed to process image"));
+      img.src = src;
+    };
+    reader.onerror = () => reject(new Error("Failed to read image file"));
+    reader.readAsDataURL(file);
+  });
 }
 
 function ProfilePage() {
@@ -76,6 +94,9 @@ function ProfilePage() {
           if (res.profile.email) {
             localStorage.setItem("dvr_user_email", res.profile.email);
           }
+          if (res.profile.avatar_url || res.avatarUrl) {
+            localStorage.setItem("dvr_user_avatar", res.profile.avatar_url || res.avatarUrl);
+          }
         }
         return res;
       } catch {
@@ -90,6 +111,7 @@ function ProfilePage() {
   const localId = typeof window !== "undefined" ? localStorage.getItem("dvr_user_id") : null;
   const localPhone = typeof window !== "undefined" ? localStorage.getItem("dvr_user_phone") : null;
   const localRole = typeof window !== "undefined" ? localStorage.getItem("dvr_user_role") : null;
+  const localAvatar = typeof window !== "undefined" ? localStorage.getItem("dvr_user_avatar") : null;
 
   const profile = backendSession?.profile || session?.profile || null;
   const rawEmpId = (profile?.employee_id || localId || "").trim().toUpperCase();
@@ -143,8 +165,11 @@ function ProfilePage() {
       if (session.profile.phone && session.profile.phone !== "9876543210") {
         localStorage.setItem("dvr_user_phone", session.profile.phone);
       }
+      if (session.avatarUrl || session.profile.avatar_url) {
+        localStorage.setItem("dvr_user_avatar", (session.avatarUrl || session.profile.avatar_url)!);
+      }
     }
-  }, [session?.profile]);
+  }, [session?.profile, session?.avatarUrl]);
 
   // Password update state
   const [newPassword, setNewPassword] = useState("");
@@ -152,17 +177,19 @@ function ProfilePage() {
   const [showPassword, setShowPassword] = useState(false);
   const [pwBusy, setPwBusy] = useState(false);
 
-  const shownAvatar = preview ?? session?.avatarUrl ?? null;
+  const currentSavedAvatar = backendSession?.profile?.avatar_url || backendSession?.avatarUrl || session?.avatarUrl || session?.profile?.avatar_url || localAvatar || null;
+  const shownAvatar = preview ?? currentSavedAvatar;
 
   async function handlePick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please choose an image file");
+      toast.error("Please choose an image file (JPG or PNG)");
       return;
     }
     try {
-      setPreview(await fileToAvatarDataUrl(file));
+      const dataUrl = await fileToAvatarDataUrl(file);
+      setPreview(dataUrl);
     } catch {
       toast.error("Could not read this image — try another photo");
     }
@@ -171,12 +198,42 @@ function ProfilePage() {
   async function handleSavePhoto() {
     if (!preview) return;
     setPhotoBusy(true);
+    let updatedAny = false;
+    let errorMsg = "";
+
     try {
-      await updateMyAvatar({ data: { photo: preview } });
-      toast.success("Profile photo updated");
-      setPreview(null);
-      if (fileRef.current) fileRef.current.value = "";
-      await queryClient.invalidateQueries({ queryKey: ["session"] });
+      // 1. PostgreSQL backend endpoint
+      try {
+        const res = await apiFetch("/auth/avatar", {
+          method: "POST",
+          body: { photo: preview },
+        });
+        if (res?.success || res?.avatar_url) updatedAny = true;
+      } catch (err: any) {
+        console.warn("backend avatar endpoint notice:", err);
+      }
+
+      // 2. Server function backup
+      try {
+        await updateMyAvatar({ data: { photo: preview } });
+        updatedAny = true;
+      } catch (err: any) {
+        console.warn("updateMyAvatar server fn notice:", err);
+        if (!updatedAny) errorMsg = err instanceof Error ? err.message : "Photo upload failed";
+      }
+
+      if (updatedAny) {
+        toast.success("Profile photo updated successfully!");
+        localStorage.setItem("dvr_user_avatar", preview);
+        setPreview(null);
+        if (fileRef.current) fileRef.current.value = "";
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["session"] }),
+          queryClient.invalidateQueries({ queryKey: ["backend-session"] }),
+        ]);
+      } else {
+        toast.error(errorMsg || "Photo upload failed. Please try again.");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Photo upload failed");
     } finally {
@@ -187,11 +244,28 @@ function ProfilePage() {
   async function handleRemovePhoto() {
     setPhotoBusy(true);
     try {
-      await removeMyAvatar({});
+      // 1. Backend REST endpoint
+      try {
+        await apiFetch("/auth/avatar", { method: "DELETE" });
+      } catch (err) {
+        console.warn("REST remove avatar notice:", err);
+      }
+
+      // 2. Server function backup
+      try {
+        await removeMyAvatar({});
+      } catch (err) {
+        console.warn("removeMyAvatar server fn notice:", err);
+      }
+
+      localStorage.removeItem("dvr_user_avatar");
       toast.success("Profile photo removed");
       setPreview(null);
       if (fileRef.current) fileRef.current.value = "";
-      await queryClient.invalidateQueries({ queryKey: ["session"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["session"] }),
+        queryClient.invalidateQueries({ queryKey: ["backend-session"] }),
+      ]);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not remove photo");
     } finally {
@@ -303,7 +377,7 @@ function ProfilePage() {
                   Save photo
                 </Button>
               )}
-              {!preview && session?.avatarUrl && (
+              {!preview && currentSavedAvatar && (
                 <Button
                   type="button"
                   variant="ghost"

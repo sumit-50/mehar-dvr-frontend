@@ -411,7 +411,7 @@ export const getSessionInfo = createServerFn({ method: "GET" })
             phone: (row.phone && row.phone !== "9876543210" && row.phone !== "null") ? row.phone : null,
             status: row.is_active ? "active" : "inactive",
             role: row.role || "employee",
-            avatar_url: null,
+            avatar_url: row.avatar_url || null,
             created_at: row.created_at,
           };
         }
@@ -448,7 +448,7 @@ export const getSessionInfo = createServerFn({ method: "GET" })
       userId,
       profile: typedProfile,
       isAdmin,
-      avatarUrl: null,
+      avatarUrl: typedProfile?.avatar_url || null,
     };
   });
 
@@ -456,10 +456,30 @@ export const getSessionInfo = createServerFn({ method: "GET" })
 export const updateMyAvatar = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .inputValidator((input: unknown) =>
-    z.object({ photo: z.string().min(100).max(6_000_000) }).parse(input),
+    z.object({ photo: z.string().min(50).max(10_000_000) }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const path = await uploadAvatarPhoto(context.userId, data.photo);
+    const { userId, claims } = context;
+    const claimEmail = (claims as Record<string, unknown> | undefined)?.["email"] as string | undefined;
+    const claimEmpId = (claims as Record<string, unknown> | undefined)?.["employee_id"] as string | undefined;
+    const path = await uploadAvatarPhoto(userId, data.photo);
+
+    try {
+      const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
+      if (pool) {
+        await pool.query(
+          `UPDATE profiles 
+           SET avatar_url = $1, updated_at = NOW() 
+           WHERE id = $2 
+              OR (LOWER(email) = LOWER($3) AND $3 <> '')
+              OR (employee_id IS NOT NULL AND employee_id = UPPER($4) AND $4 <> '')`,
+          [path, userId, claimEmail || "", claimEmpId || ""]
+        );
+      }
+    } catch (pgErr) {
+      console.warn("Notice: PG avatar update in updateMyAvatar:", pgErr);
+    }
+
     return { path, url: path };
   });
 
@@ -467,7 +487,27 @@ export const updateMyAvatar = createServerFn({ method: "POST" })
 export const removeMyAvatar = createServerFn({ method: "POST" })
   .middleware([requireAuth])
   .handler(async ({ context }) => {
-    await removeAvatarPhotos(context.userId);
+    const { userId, claims } = context;
+    const claimEmail = (claims as Record<string, unknown> | undefined)?.["email"] as string | undefined;
+    const claimEmpId = (claims as Record<string, unknown> | undefined)?.["employee_id"] as string | undefined;
+    await removeAvatarPhotos(userId);
+
+    try {
+      const { pool } = await import("../../../backend/src/config/db.js").catch(() => ({ pool: null }));
+      if (pool) {
+        await pool.query(
+          `UPDATE profiles 
+           SET avatar_url = NULL, updated_at = NOW() 
+           WHERE id = $1 
+              OR (LOWER(email) = LOWER($2) AND $2 <> '')
+              OR (employee_id IS NOT NULL AND employee_id = UPPER($3) AND $3 <> '')`,
+          [userId, claimEmail || "", claimEmpId || ""]
+        );
+      }
+    } catch (pgErr) {
+      console.warn("Notice: PG avatar remove in removeMyAvatar:", pgErr);
+    }
+
     return { ok: true };
   });
 

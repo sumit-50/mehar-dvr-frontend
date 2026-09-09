@@ -98,7 +98,7 @@ function AdminEmployeesPage() {
               email: u.email,
               employee_id: empId,
               phone: cleanPhone,
-              avatar_url: null,
+              avatar_url: u.avatar_url || null,
               status: u.is_active ? "active" : "inactive",
               role: u.role || (isAdm ? "admin" : "employee"),
               roles: isAdm ? ["admin"] : ["employee"],

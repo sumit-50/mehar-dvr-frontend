@@ -247,6 +247,9 @@ export async function signAvatarUrls(paths: Array<string | null>): Promise<Recor
 
 /** Decode + validate a base64 image and return avatar data URI. */
 export async function uploadAvatarPhoto(userId: string, photoBase64: string): Promise<string> {
+  if (photoBase64.startsWith("data:image/")) {
+    return photoBase64;
+  }
   const comma = photoBase64.indexOf(",");
   const raw = comma >= 0 ? photoBase64.slice(comma + 1) : photoBase64;
   let bytes: Buffer;
@@ -255,19 +258,28 @@ export async function uploadAvatarPhoto(userId: string, photoBase64: string): Pr
   } catch {
     throw new Error("Invalid image data");
   }
-  if (bytes.length < 500) throw new Error("Image looks empty — please choose another photo");
+  if (bytes.length < 50) throw new Error("Image looks empty — please choose another photo");
   if (bytes.length > MAX_AVATAR_BYTES) throw new Error("Image is too large (max 4 MB)");
   const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
   const isPng =
     bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
-  if (!isJpeg && !isPng) throw new Error("Only JPEG or PNG images are accepted");
+  const isWebp =
+    bytes.length > 12 &&
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50;
 
-  const mime = isJpeg ? "image/jpeg" : "image/png";
+  const mime = isJpeg ? "image/jpeg" : isPng ? "image/png" : isWebp ? "image/webp" : "image/jpeg";
   return `data:${mime};base64,${raw}`;
 }
 
 export async function removeAvatarPhotos(userId: string): Promise<void> {
-  // No-op
+  // Database update handled in server fn / backend route
 }
 
 function normalizeOtpKey(raw: string): string {

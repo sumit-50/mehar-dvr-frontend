@@ -226,6 +226,7 @@ function DashboardPage() {
   const localEmail = typeof window !== "undefined" ? localStorage.getItem("dvr_user_email") : null;
   const localId = typeof window !== "undefined" ? localStorage.getItem("dvr_user_id") : null;
   const localName = typeof window !== "undefined" ? localStorage.getItem("dvr_user_name") : null;
+  const localAvatar = typeof window !== "undefined" ? localStorage.getItem("dvr_user_avatar") : null;
 
   const isLocalStorageAdmin =
     localRole === "admin" ||
@@ -242,6 +243,7 @@ function DashboardPage() {
   const activeProfile = session?.profile ? {
     ...session.profile,
     employee_id: (session.profile.employee_id && session.profile.employee_id !== "MEH000" && session.profile.employee_id !== "MEH-ADM-001") ? session.profile.employee_id : (isAdmin ? "MEHADM001" : session.profile.employee_id || "MEH101"),
+    avatar_url: session.profile.avatar_url || session.avatarUrl || localAvatar || null,
   } : {
     id: "00000000-0000-0000-0000-000000000001",
     name: localName || (isAdmin ? "Yogendra (Admin)" : "Employee"),
@@ -251,7 +253,7 @@ function DashboardPage() {
     status: "active" as const,
     created_at: new Date().toISOString(),
     phone: null,
-    avatar_url: null,
+    avatar_url: localAvatar || null,
   };
 
   return isAdmin ? <AdminDashboard profile={activeProfile} /> : <EmployeeDashboard profile={activeProfile} />;
