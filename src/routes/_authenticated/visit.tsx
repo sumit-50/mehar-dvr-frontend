@@ -374,61 +374,81 @@ function VisitPage() {
   });
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
+    <div className="mx-auto max-w-2xl space-y-3.5 sm:space-y-4">
+      {/* Header */}
       <div className="animate-fade-up">
-        <h1 className="font-display text-2xl font-bold">Mehar DVR — Daily Visit Report</h1>
-        <p className="text-sm text-muted-foreground">
-          START → Select Office/Branch → Live GPS Verification → Daily Visit Report
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-100 text-sky-700 text-[10px] sm:text-[11px] font-bold mb-1">
+          <Sparkles className="h-3 w-3 text-amber-500 shrink-0" />
+          <span>Mehar DVR Portal</span>
+        </div>
+        <h1 className="font-display text-base sm:text-xl font-extrabold text-slate-900 leading-tight">
+          Daily Field Visit Report
+        </h1>
+        <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+          Step-by-step GPS verification and client visit logging
         </p>
       </div>
 
-      {/* Step Indicator */}
-      <ol className="flex items-center gap-2">
-        {STEPS.map((label, i) => (
-          <li key={label} className="flex flex-1 items-center gap-2">
-            <span
-              className={cn(
-                "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-                i < step
-                  ? "bg-success text-success-foreground"
-                  : i === step
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground",
+      {/* Modern Stepper Indicator */}
+      <div className="rounded-2xl border border-slate-100 bg-white/95 p-2.5 sm:p-3 shadow-xs">
+        <div className="flex items-center justify-between gap-1 sm:gap-2">
+          {STEPS.map((label, i) => (
+            <div key={label} className="flex-1 flex items-center gap-1.5 sm:gap-2">
+              <div
+                className={cn(
+                  "flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full text-[10.5px] sm:text-xs font-bold transition-all",
+                  i < step
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : i === step
+                      ? "bg-sky-600 text-white shadow-xs ring-2 ring-sky-200"
+                      : "bg-slate-100 text-slate-400 border border-slate-200",
+                )}
+              >
+                {i < step ? <CheckCircle2 className="h-3.5 w-3.5" /> : i + 1}
+              </div>
+              <span
+                className={cn(
+                  "text-[10px] sm:text-xs font-semibold truncate",
+                  i === step
+                    ? "text-slate-900 font-bold"
+                    : i < step
+                      ? "text-emerald-700 font-medium"
+                      : "text-slate-400",
+                )}
+              >
+                {label}
+              </span>
+              {i < STEPS.length - 1 && (
+                <div
+                  className={cn(
+                    "h-[2px] flex-1 mx-0.5 sm:mx-1 rounded-full",
+                    i < step ? "bg-emerald-500" : "bg-slate-200",
+                  )}
+                />
               )}
-            >
-              {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
-            </span>
-            <span
-              className={cn(
-                "hidden text-xs font-semibold sm:block",
-                i === step ? "text-foreground" : "text-muted-foreground",
-              )}
-            >
-              {label}
-            </span>
-            {i < STEPS.length - 1 && <span className="h-px flex-1 bg-border" />}
-          </li>
-        ))}
-      </ol>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Step 0: Location & GPS Selection */}
       {step === 0 && (
-        <section className="space-y-4 animate-fade-up">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-display text-base font-bold flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                1. Select Office / Branch
+        <section className="space-y-3 sm:space-y-3.5 animate-fade-up">
+          <div className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-4 shadow-xs backdrop-blur-md space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-xs sm:text-sm font-extrabold flex items-center gap-1.5 text-slate-900 leading-tight">
+                <Building2 className="h-4 w-4 text-sky-600 shrink-0" />
+                <span>1. Select Office / Branch</span>
               </h2>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setAddOfficeOpen(true)}
-                className="h-8 text-xs font-semibold gap-1.5 border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 shadow-sm"
+                className="h-7.5 px-2.5 text-[10.5px] sm:text-xs font-bold gap-1 rounded-xl border-sky-200 bg-sky-50 text-sky-700 hover:bg-sky-100/80 shadow-xs"
               >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Add Office / Amazon Place Finder</span>
-                <Sparkles className="h-3 w-3 text-amber-500" />
+                <Plus className="h-3 w-3" />
+                <span>Add Office</span>
+                <Sparkles className="h-2.5 w-2.5 text-amber-500 shrink-0" />
               </Button>
             </div>
 
@@ -450,15 +470,15 @@ function VisitPage() {
                 setPhoto(null);
               }}
             >
-              <SelectTrigger className="h-12 text-sm font-medium">
-                <SelectValue placeholder="Select the Office / Branch you are visiting…" />
+              <SelectTrigger className="h-10 text-xs sm:text-sm font-medium rounded-xl border-slate-200 bg-slate-50/50">
+                <SelectValue placeholder="Choose visiting Office / Branch…" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-64 rounded-xl">
                 <div className="p-1 border-b border-border">
                   <button
                     type="button"
                     onClick={() => setAddOfficeOpen(true)}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-xs font-bold text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     <span>➕ Add New Office (Amazon Place Finder)</span>
@@ -466,144 +486,123 @@ function VisitPage() {
                 </div>
 
                 {activeLocations.length > 0 && (
-                  <div className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                     Approved Offices (100m Radius Fixed)
                   </div>
                 )}
                 {activeLocations.map((loc) => (
-                  <SelectItem key={loc.id} value={loc.id}>
+                  <SelectItem key={loc.id} value={loc.id} className="text-xs">
                     {loc.company_name ? `${loc.company_name} — ${loc.location_name}` : loc.location_name}
                   </SelectItem>
                 ))}
 
                 {pendingLocations.length > 0 && (
-                  <div className="mt-2 px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  <div className="mt-1.5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-600">
                     Pending 1st Visit Approval
                   </div>
                 )}
                 {pendingLocations.map((loc) => (
-                  <SelectItem key={loc.id} value={loc.id}>
+                  <SelectItem key={loc.id} value={loc.id} className="text-xs">
                     {loc.company_name ? `${loc.company_name} — ${loc.location_name}` : loc.location_name} (First Visit)
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {loadingLocations && <div className="mt-3 h-10 animate-pulse rounded-xl bg-muted" />}
+            {loadingLocations && <div className="h-9 animate-pulse rounded-xl bg-slate-100" />}
 
             {/* Prompt to select office if not selected */}
             {!selected && (
-              <div className="mt-4 rounded-xl border border-dashed border-border bg-muted/30 p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  👆 Select your assigned Office / Branch from the dropdown above to capture your live GPS coordinates.
+              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-3 text-center">
+                <p className="text-[11px] sm:text-xs text-slate-500">
+                  👆 Select your assigned Office / Branch above to activate live GPS check.
                 </p>
               </div>
             )}
 
             {/* Live Phone GPS Status Bar after selecting office */}
             {selected && (
-              <div className="mt-4">
+              <div className="space-y-2.5 pt-1">
                 {!fix ? (
-                  <div className="rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-5 text-center shadow-soft animate-fade-up">
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lift">
-                      <Navigation className="h-6 w-6 animate-pulse" />
+                  <div className="rounded-xl border-2 border-dashed border-sky-300 bg-sky-50/50 p-4 text-center">
+                    <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-white shadow-xs">
+                      <Navigation className="h-5 w-5 animate-pulse" />
                     </div>
-                    <h3 className="text-base font-bold font-display text-foreground">
+                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">
                       {geoPermission === "denied" ? "Location Access Blocked" : "Live GPS Permission Needed"}
                     </h3>
-                    <p className="mx-auto mt-1.5 max-w-md text-xs text-muted-foreground leading-relaxed">
+                    <p className="mx-auto mt-1 max-w-md text-[11px] text-slate-500 leading-relaxed">
                       {geoError ||
-                        "To verify genuine field visits, Mehar DVR requires real-time device GPS access. Click the button below to allow location access."}
+                        "To verify genuine field visits, Mehar DVR requires real-time device GPS access."}
                     </p>
 
-                    {geoPermission === "denied" && (
-                      <div className="mx-auto mt-3 max-w-md rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-left text-xs text-amber-900 dark:text-amber-200">
-                        <p className="font-bold flex items-center gap-1.5 mb-1 text-amber-800 dark:text-amber-300">
-                          <span>🔒</span> How to enable Location in Browser:
-                        </p>
-                        <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed">
-                          <li>Click the <strong>Lock / Tune icon 🔒</strong> next to the website URL at the top of your browser.</li>
-                          <li>Find <strong>Location</strong> and set it to <strong>Allow</strong>.</li>
-                          <li>Tap the <strong>Retry GPS Access</strong> button below or refresh the page.</li>
-                        </ol>
-                      </div>
-                    )}
-
-                    <div className="mt-4 flex flex-wrap justify-center items-center gap-2.5">
+                    <div className="mt-3 flex flex-wrap justify-center items-center gap-2">
                       <Button
-                        size="default"
+                        size="sm"
                         onClick={() => {
                           retryGps();
                           toast.info("Requesting live satellite GPS…", { duration: 2500 });
                         }}
-                        className="font-bold shadow-lift bg-primary hover:bg-primary/90 text-primary-foreground px-5 h-10 gap-2 text-xs"
+                        className="font-bold shadow-xs bg-sky-600 hover:bg-sky-700 text-white px-3.5 h-8.5 gap-1.5 text-xs rounded-xl"
                       >
-                        <Navigation className="h-4 w-4" />
-                        {geoPermission === "denied" ? "Retry GPS Access" : "Allow Live Location Access"}
+                        <Navigation className="h-3.5 w-3.5" />
+                        {geoPermission === "denied" ? "Retry GPS Access" : "Allow Live GPS"}
                       </Button>
                       <Button
-                        size="default"
+                        size="sm"
                         variant="outline"
                         onClick={() => {
                           useFallbackLocation();
                           toast.success("Using estimated network location coordinates.");
                         }}
-                        className="font-semibold px-4 h-10 gap-2 text-xs border-border"
+                        className="font-semibold px-3 h-8.5 gap-1.5 text-xs border-slate-200 rounded-xl"
                       >
-                        <MapPin className="h-4 w-4 text-primary" />
-                        Use Estimated Location (Continue)
+                        <MapPin className="h-3.5 w-3.5 text-sky-600" />
+                        Use Estimated Location
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm shadow-soft animate-fade-up">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <Navigation className="h-4 w-4 text-primary shrink-0" />
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-semibold text-success flex items-center gap-1">
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            Live Satellite GPS:
-                          </span>
-                          <span className="text-xs font-mono text-foreground font-semibold">
-                            {fix.latitude.toFixed(6)}, {fix.longitude.toFixed(6)} ({formatAccuracy(fix.accuracy)})
-                          </span>
-                          {accuracyOk ? (
-                            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                              ✓ Location Verified ({formatAccuracy(fix.accuracy)})
-                            </span>
-                          ) : (
-                            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300 animate-pulse">
-                              ⏳ Refining Signal (Needs ≤ {effectiveMaxAccuracy}m)…
-                            </span>
-                          )}
-                        </div>
+                  <div className="flex flex-col gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Navigation className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                        <span className="font-bold text-emerald-800 text-[11px] sm:text-xs">
+                          Live Satellite GPS:
+                        </span>
+                        <span className="font-mono text-[10.5px] sm:text-xs text-slate-700 font-semibold">
+                          {fix.latitude.toFixed(5)}, {fix.longitude.toFixed(5)}
+                        </span>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          retryGps();
-                          toast.info("Re-locking high-precision satellite GPS…");
-                        }}
-                        className="h-7 text-xs font-semibold gap-1"
-                      >
-                        <RefreshCw className="h-3 w-3" />
-                        Refresh GPS
-                      </Button>
+                      <div className="flex items-center gap-1.5">
+                        {accuracyOk ? (
+                          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-emerald-800 border border-emerald-300/60">
+                            ✓ ±{Math.round(fix.accuracy)}m Accuracy
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-amber-800 border border-amber-300 animate-pulse">
+                            ⏳ Refining (±{Math.round(fix.accuracy)}m)…
+                          </span>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            retryGps();
+                            toast.info("Re-locking high-precision GPS…");
+                          }}
+                          className="h-6 px-1.5 text-[10px] font-bold text-slate-600 hover:text-slate-900"
+                        >
+                          <RefreshCw className="h-2.5 w-2.5 mr-1" /> Refresh
+                        </Button>
+                      </div>
                     </div>
 
-                    {!accuracyOk && (
-                      <p className="text-[11px] text-amber-800 dark:text-amber-300 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
-                        🛰️ <strong>Waiting for Signal Lock:</strong> Current accuracy is {formatAccuracy(fix.accuracy)}. Required accuracy is within ±{effectiveMaxAccuracy}m to verify your physical visit.
-                      </p>
-                    )}
-
                     {liveAddress && (
-                      <p className="text-xs text-foreground font-medium flex items-center gap-1.5 pt-1 border-t border-success/20">
-                        <MapPin className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                        <span className="font-semibold text-amber-800 dark:text-amber-300">Exact Location:</span>
-                        <span className="text-muted-foreground">{liveAddress}</span>
+                      <p className="text-[10.5px] sm:text-xs text-slate-600 font-medium flex items-center gap-1 pt-1 border-t border-emerald-200/60 truncate">
+                        <MapPin className="h-3 w-3 text-amber-600 shrink-0" />
+                        <span className="font-bold text-slate-800 shrink-0">Resolved:</span>
+                        <span className="truncate">{liveAddress}</span>
                       </p>
                     )}
                   </div>
@@ -611,128 +610,128 @@ function VisitPage() {
               </div>
             )}
 
-            {/* Approved Office Live GPS Comparison (Future Visit Flow) */}
+            {/* Distance & First Visit Status Banners */}
             {selected && isApprovedOffice && fix && distance != null && (
               <div
                 className={cn(
-                  "mt-4 rounded-xl border p-4 text-sm transition-all",
+                  "rounded-xl border p-3 text-xs transition-all",
                   distanceOk
-                    ? "border-success/40 bg-success/10 text-foreground"
-                    : "border-destructive/40 bg-destructive/10 text-destructive",
+                    ? "border-emerald-200 bg-emerald-50/70 text-slate-800"
+                    : "border-rose-200 bg-rose-50/70 text-rose-800",
                 )}
               >
                 {distanceOk ? (
-                  <div className="space-y-1">
-                    <p className="font-semibold text-success flex items-center gap-1.5">
-                      <CheckCircle2 className="h-4.5 w-4.5 text-success" />
-                      Approved Office Recognized (Within 100m Radius)
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Live GPS is <strong>{formatDistance(distance)}</strong> from the fixed office location (allowed {radiusLimit}m). Previously saved owner & office details will be automatically loaded.
-                    </p>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-emerald-800 text-xs sm:text-sm">
+                        Approved Office Recognized (Within 100m)
+                      </p>
+                      <p className="text-[11px] text-slate-600 mt-0.5">
+                        Live GPS is <strong>{formatDistance(distance)}</strong> from office location. Previously approved owner details will be loaded.
+                      </p>
+                    </div>
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    <p className="font-semibold text-destructive flex items-center gap-1.5">
-                      <AlertCircle className="h-4.5 w-4.5 text-destructive" />
-                      Outside 100-Meter Radius
-                    </p>
-                    <p className="text-xs text-destructive/90">
-                      You are <strong>{formatDistance(distance)}</strong> away from {[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}. Daily visit reports are only allowed within {radiusLimit} meters of the approved location.
-                    </p>
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-rose-800 text-xs sm:text-sm">
+                        Outside 100-Meter Radius
+                      </p>
+                      <p className="text-[11px] text-rose-700 mt-0.5">
+                        You are <strong>{formatDistance(distance)}</strong> away. Daily visit reports are only allowed within {radiusLimit}m.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* First Visit to Office Banner (First Visit Flow) */}
             {selected && isFirstVisit && fix && (
-              <div className="mt-4 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm animate-fade-up">
-                <p className="font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-                  <Satellite className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
-                  First Visit to this Office — Live Location Captured
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  📍 <strong>Note:</strong> Location is <strong>NOT fixed yet</strong>. You will manually enter the Owner Name, Owner Mobile Number, and Office Description on the next step. Once submitted, Admin Sir will review and approve the fixed location with a 100-meter radius.
-                </p>
+              <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs animate-fade-up">
+                <div className="flex items-start gap-2">
+                  <Satellite className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-amber-900 text-xs sm:text-sm">
+                      First Visit to this Office — Live GPS Captured
+                    </p>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      📍 You will enter owner & office details on Step 2. Admin will review and lock the 100m fixed radius.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
           {/* Map View */}
           {selected && (
-            <div id="location-map-card" className="rounded-2xl border border-border bg-card p-4 shadow-soft">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-                <div>
-                  <span className="font-semibold text-foreground flex items-center gap-1.5">
-                    <Navigation className="h-3.5 w-3.5 text-primary" />
-                    Live Satellite GPS: {fix ? `${fix.latitude.toFixed(6)}, ${fix.longitude.toFixed(6)}` : "Acquiring GPS…"} (±{fix ? Math.round(fix.accuracy) : 0}m)
-                  </span>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    🔒 <strong>Anti-Cheat Active:</strong> Location is locked strictly to your device's live satellite GPS chip.
-                  </p>
-                </div>
+            <div id="location-map-card" className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-4 shadow-xs">
+              <div className="mb-2.5 flex items-center justify-between gap-2 text-xs">
+                <span className="font-bold text-slate-900 flex items-center gap-1.5 text-[11px] sm:text-xs">
+                  <Navigation className="h-3.5 w-3.5 text-sky-600" />
+                  Satellite Map Radar
+                </span>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 text-xs font-semibold"
+                  className="h-6 px-2 text-[10.5px] font-bold rounded-lg border-slate-200"
                   onClick={() => {
                     retryGps();
                     toast.info("Updating live satellite signal…");
                   }}
                 >
-                  <RefreshCw className="mr-1.5 h-3 w-3" /> Refresh GPS
+                  <RefreshCw className="mr-1 h-2.5 w-2.5" /> Refresh
                 </Button>
               </div>
 
-              {/* 2-Point Location Legend & HUD */}
-              <div className="mb-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-2.5">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+              {/* 2-Point Legend */}
+              <div className="mb-2.5 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+                <div className="flex items-center gap-2 rounded-xl border border-sky-100 bg-sky-50/50 p-2">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sky-600 text-[10px] font-bold text-white">
                     🏢
                   </span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-foreground truncate">
-                      Point 1: Destination Visit Office
+                    <p className="font-bold text-slate-800 text-[10.5px] sm:text-xs truncate">
+                      Point 1: Visit Destination
                     </p>
-                    <p className="text-[11px] text-muted-foreground truncate">
+                    <p className="text-[10px] text-slate-500 truncate">
                       {[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/5 p-2.5">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+                <div className="flex items-center gap-2 rounded-xl border border-emerald-100 bg-emerald-50/50 p-2">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
                     📍
                   </span>
                   <div className="min-w-0">
-                    <p className="font-semibold text-foreground truncate">
-                      Point 2: Your Exact Live Location
+                    <p className="font-bold text-slate-800 text-[10.5px] sm:text-xs truncate">
+                      Point 2: Your Live Location
                     </p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      {fix ? `${fix.latitude.toFixed(5)}, ${fix.longitude.toFixed(5)} (${formatAccuracy(fix.accuracy)})` : "Acquiring GPS…"}
+                    <p className="text-[10px] text-slate-500 truncate">
+                      {fix ? `${fix.latitude.toFixed(5)}, ${fix.longitude.toFixed(5)}` : "Acquiring GPS…"}
                     </p>
                   </div>
                 </div>
               </div>
 
               <LocationMap
-                className="h-72 w-full rounded-xl overflow-hidden border border-border"
+                className="h-60 sm:h-72 w-full rounded-xl overflow-hidden border border-slate-200"
                 fit
                 center={fix ? [fix.latitude, fix.longitude] : [selected.latitude, selected.longitude]}
                 zoom={16}
                 markers={[
-                  // Point 1: Destination Office Location
                   {
                     id: "destination-office",
                     lat: selected.latitude,
                     lng: selected.longitude,
-                    title: `🏢 Destination: ${[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}`,
+                    title: `🏢 ${[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}`,
                     subtitle: isApprovedOffice ? `Approved Fixed Office (${radiusLimit}m Geo-fence)` : "Proposed Visit Destination",
                     tone: "primary" as const,
                     label: "🏢",
                   },
-                  // Point 2: Exact Live GPS Position of Employee
                   ...(fix
                     ? [
                         {
@@ -749,7 +748,6 @@ function VisitPage() {
                     : []),
                 ]}
                 circles={[
-                  // 100-Meter Geo-Fence Circle around Destination Office
                   {
                     id: "destination-geofence",
                     lat: selected.latitude,
@@ -760,16 +758,14 @@ function VisitPage() {
                 ]}
               />
 
-              {/* Distance summary below map */}
               {distance != null && (
-                <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 px-1 text-xs">
-                  <span className="text-muted-foreground flex items-center gap-1.5">
-                    📏 <strong>Direct Distance:</strong>{" "}
-                    <span className="font-semibold text-foreground">{formatDistance(distance)}</span> from destination point
+                <div className="mt-2 flex items-center justify-between text-xs px-1">
+                  <span className="text-slate-500 text-[10.5px] sm:text-xs">
+                    📏 Distance: <strong className="text-slate-800">{formatDistance(distance)}</strong>
                   </span>
                   {isApprovedOffice && (
-                    <span className={cn("font-bold px-2 py-0.5 rounded-full text-[11px]", distanceOk ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" : "bg-destructive/15 text-destructive")}>
-                      {distanceOk ? "✓ Inside 100m zone" : `⚠️ Outside ${radiusLimit}m zone`}
+                    <span className={cn("font-bold px-2 py-0.5 rounded-full text-[10px]", distanceOk ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800")}>
+                      {distanceOk ? "✓ Inside 100m" : `⚠️ Outside ${radiusLimit}m`}
                     </span>
                   )}
                 </div>
@@ -777,15 +773,15 @@ function VisitPage() {
             </div>
           )}
 
-          {/* Continue Button */}
-          <div className="flex justify-end">
+          {/* Continue to Step 2 Button */}
+          <div className="flex justify-end pt-1">
             <Button
-              size="lg"
+              size="default"
               disabled={!canContinueStep1}
               onClick={() => setStep(1)}
-              className="font-semibold shadow-lift"
+              className="h-10 px-5 text-xs sm:text-sm font-bold rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-xs"
             >
-              Continue to Step 2 <ArrowRight className="ml-2 h-4 w-4" />
+              Continue to Step 2 <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>
           </div>
         </section>
@@ -793,81 +789,83 @@ function VisitPage() {
 
       {/* Step 1: Office Details & Photo Proof */}
       {step === 1 && selected && (
-        <section className="space-y-4 animate-fade-up">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-base font-bold flex items-center gap-2">
-                <Camera className="h-5 w-5 text-primary" />
-                2. Office Details & Photo Proof
+        <section className="space-y-3 sm:space-y-3.5 animate-fade-up">
+          <div className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-5 shadow-xs backdrop-blur-md space-y-3">
+            {/* Header with Title and Status Badge */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-0.5">
+              <h2 className="font-display text-xs sm:text-sm md:text-base font-extrabold flex items-center gap-1.5 text-slate-900 leading-tight">
+                <Camera className="h-4 w-4 text-sky-600 shrink-0" />
+                <span>2. Office Details & Photo Proof</span>
               </h2>
               <span
                 className={cn(
-                  "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                  "w-fit rounded-lg px-2 py-0.5 text-[9.5px] sm:text-[10.5px] font-bold shrink-0",
                   !isFirstVisit
-                    ? "bg-success/15 text-success border border-success/30"
-                    : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30",
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80"
+                    : "bg-amber-50 text-amber-800 border border-amber-200/80",
                 )}
               >
-                {!isFirstVisit ? "Approved Office (100m Radius)" : "1st Visit (Requires Admin Approval)"}
+                {!isFirstVisit ? "✓ Approved Office" : "⚡ 1st Visit (Requires Admin Approval)"}
               </span>
             </div>
 
-            {/* Selected Office Summary */}
-            <div className="mb-4 flex items-start gap-3 rounded-xl bg-accent/60 px-4 py-3 text-sm">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <div className="min-w-0">
-                <p className="font-semibold">
-                  {[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}
-                </p>
-                {selected.address && (
-                  <p className="text-xs text-muted-foreground">{selected.address}</p>
-                )}
-                {isApprovedOffice && distance != null && (
-                  <p className="mt-0.5 text-[11px] text-success font-medium flex items-center gap-1">
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Matched within 100m radius ({formatDistance(distance)} from approved location)
+            {/* Selected Office Info Tile */}
+            <div className="rounded-xl bg-sky-50/70 border border-sky-100 p-3 text-xs space-y-1">
+              <div className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" />
+                <div className="min-w-0">
+                  <p className="font-bold text-slate-900 text-xs sm:text-sm">
+                    {[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}
                   </p>
-                )}
-                {isFirstVisit && (
-                  <p className="mt-0.5 text-[11px] text-amber-700 dark:text-amber-300 font-medium flex items-center gap-1">
-                    <Satellite className="h-3.5 w-3.5" /> First-time visit: Captured live GPS will be sent to Admin Sir for 100m radius approval.
-                  </p>
-                )}
+                  {selected.address && (
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{selected.address}</p>
+                  )}
+                </div>
               </div>
+              {isApprovedOffice && distance != null && (
+                <p className="text-[10.5px] text-emerald-700 font-semibold flex items-center gap-1 pl-5">
+                  <CheckCircle2 className="h-3 w-3" /> Matched within 100m radius ({formatDistance(distance)} from approved location)
+                </p>
+              )}
+              {isFirstVisit && (
+                <p className="text-[10.5px] text-amber-800 font-semibold flex items-center gap-1 pl-5">
+                  <Satellite className="h-3 w-3" /> First-time visit: Captured live GPS will be sent to Admin Sir for 100m radius approval.
+                </p>
+              )}
             </div>
 
             {/* Office Details Form */}
-            <div className="mb-4 space-y-3.5 rounded-xl border border-border bg-card p-4 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold flex items-center gap-1.5">
-                    <Building2 className="h-4 w-4 text-primary" />
-                    {isFirstVisit ? "Office & Owner Details (Enter for 1st Visit Setup)" : "Office & Owner Information (Approved Record)"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {isFirstVisit
-                      ? "Please enter the Owner Name, Owner Mobile Number, and Office Description for Admin Sir's review."
-                      : "These verified details are saved in the system from the initial approval."}
-                  </p>
-                </div>
+            <div className="space-y-2.5 rounded-xl border border-slate-100 bg-slate-50/60 p-3 sm:p-3.5">
+              <div>
+                <p className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <Building2 className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+                  {isFirstVisit ? "Office & Owner Details (Enter for 1st Visit Setup)" : "Office & Owner Information (Approved Record)"}
+                </p>
+                <p className="text-[10.5px] sm:text-xs text-slate-500 mt-0.5">
+                  {isFirstVisit
+                    ? "Please enter Owner Name, 10-digit Mobile Number, and Description for Admin Sir's review."
+                    : "Verified details loaded from official approval record."}
+                </p>
               </div>
 
               {isFirstVisit ? (
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="space-y-1.5 sm:col-span-2">
-                    <Label htmlFor="pd-desc" className="text-xs font-semibold">
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  <div className="space-y-1 sm:col-span-2">
+                    <Label htmlFor="pd-desc" className="text-[11px] sm:text-xs font-bold text-slate-700">
                       Office Description <span className="text-destructive">*</span>
                     </Label>
                     <Textarea
                       id="pd-desc"
-                      rows={3}
+                      rows={2}
                       value={officeDetails.description}
                       onChange={(e) => setOfficeDetails({ ...officeDetails, description: e.target.value })}
-                      placeholder="e.g. Branch office providing loan consultations and customer document verification."
+                      placeholder="e.g. Branch office providing loan consultations and document verification."
+                      className="text-xs bg-white rounded-xl border-slate-200 min-h-[56px]"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="pd-owner" className="text-xs font-semibold">
+                  <div className="space-y-1">
+                    <Label htmlFor="pd-owner" className="text-[11px] sm:text-xs font-bold text-slate-700">
                       Owner / Contact Name <span className="text-destructive">*</span>
                     </Label>
                     <Input
@@ -876,11 +874,12 @@ function VisitPage() {
                       value={officeDetails.ownerName}
                       onChange={(e) => setOfficeDetails({ ...officeDetails, ownerName: e.target.value })}
                       placeholder="e.g. Dr. R. K. Sharma / Branch Head"
+                      className="h-8.5 text-xs bg-white rounded-xl border-slate-200"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label htmlFor="pd-number" className="text-xs font-semibold">
+                  <div className="space-y-1">
+                    <Label htmlFor="pd-number" className="text-[11px] sm:text-xs font-bold text-slate-700">
                       Owner Mobile Number (10 digits) <span className="text-destructive">*</span>
                     </Label>
                     <Input
@@ -889,56 +888,63 @@ function VisitPage() {
                       value={officeDetails.ownerNumber}
                       onChange={(e) => setOfficeDetails({ ...officeDetails, ownerNumber: e.target.value })}
                       placeholder="e.g. 9829012345"
+                      className="h-8.5 text-xs bg-white rounded-xl border-slate-200"
                     />
                   </div>
                 </div>
               ) : (
-                <div className="rounded-xl border border-border/80 bg-accent/40 p-3.5 text-xs space-y-1.5">
+                <div className="rounded-xl border border-slate-200/80 bg-white p-3 text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground font-medium">Verified Owner:</span>
-                    <span className="font-semibold text-foreground">{selected.owner_name || "—"}</span>
+                    <span className="text-slate-500 font-medium">Verified Owner:</span>
+                    <span className="font-bold text-slate-800">{selected.owner_name || "—"}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground font-medium">Contact Number:</span>
-                    <span className="font-semibold text-foreground">{selected.owner_number || "—"}</span>
+                    <span className="text-slate-500 font-medium">Contact Number:</span>
+                    <span className="font-bold text-slate-800">{selected.owner_number || "—"}</span>
                   </div>
                   {selected.company_description && (
-                    <div className="pt-1.5 border-t border-border/60">
-                      <span className="text-muted-foreground">Description: </span>
-                      <span className="text-foreground font-medium">{selected.company_description}</span>
+                    <div className="pt-1.5 border-t border-slate-100">
+                      <span className="text-slate-500">Description: </span>
+                      <span className="text-slate-800 font-medium">{selected.company_description}</span>
                     </div>
                   )}
                 </div>
               )}
 
               {isFirstVisit && !hasValidOfficeDetails && (
-                <div className="rounded-lg bg-amber-500/10 p-2.5 text-xs text-amber-700 dark:text-amber-300 flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>Please fill Owner Name, 10-digit Mobile Number, and Office Description before opening camera.</span>
+                <div className="rounded-xl bg-amber-50 p-2.5 text-[11px] text-amber-800 border border-amber-200/80 flex items-center gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+                  <span>Please fill Owner Name, 10-digit Mobile Number, and Description before opening camera.</span>
                 </div>
               )}
             </div>
 
             {/* Photo Capture Section */}
             {photo ? (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <img
                   src={photo.rawDataUrl}
                   alt="Captured visit proof"
-                  className="w-full rounded-xl border border-border"
+                  className="w-full rounded-2xl border border-slate-200 object-cover max-h-60"
                 />
-                <p className="rounded-lg bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
-                  Photo captured at{" "}
-                  {new Date(photo.takenAt).toLocaleTimeString("en-IN", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
-                  . GPS watermark with coordinates will be permanently embedded.
-                </p>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setCameraOpen(true)}>
-                    <RefreshCw className="mr-2 h-4 w-4" /> Retake Photo
+                <div className="flex items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-1.5 text-[10.5px] sm:text-xs text-slate-600 border border-slate-100">
+                  <span>
+                    ✓ Photo captured at{" "}
+                    <strong>
+                      {new Date(photo.takenAt).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      })}
+                    </strong>
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 px-2.5 text-[11px] rounded-lg font-bold border-slate-200"
+                    onClick={() => setCameraOpen(true)}
+                  >
+                    <RefreshCw className="mr-1 h-3 w-3" /> Retake
                   </Button>
                 </div>
               </div>
@@ -953,43 +959,48 @@ function VisitPage() {
                   setCameraOpen(true);
                 }}
                 className={cn(
-                  "flex w-full flex-col items-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition",
+                  "flex w-full flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-4 py-5 sm:py-6 text-center transition",
                   !blockReason
-                    ? "border-primary/40 bg-primary/5 hover:bg-primary/10 cursor-pointer"
-                    : "border-muted-foreground/30 bg-muted/30 opacity-70 cursor-not-allowed",
+                    ? "border-sky-300 bg-sky-50/40 hover:bg-sky-50/80 cursor-pointer"
+                    : "border-slate-200 bg-slate-50/50 opacity-70 cursor-not-allowed",
                 )}
               >
                 <div
                   className={cn(
-                    "flex h-14 w-14 items-center justify-center rounded-full shadow-lift",
-                    !blockReason ? "bg-primary text-primary-foreground" : "bg-muted-foreground/30 text-muted-foreground",
+                    "flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full shadow-xs",
+                    !blockReason ? "bg-gradient-to-br from-sky-500 to-blue-600 text-white" : "bg-slate-200 text-slate-400",
                   )}
                 >
-                  <Camera className="h-6 w-6" />
+                  <Camera className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">
+                  <p className="text-xs sm:text-sm font-bold text-slate-900">
                     {!blockReason ? "Open Camera & Click Photo" : "Camera Locked"}
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {!blockReason ? "Capture live photo proof of your visit" : blockReason}
+                  <p className="mt-0.5 text-[10.5px] sm:text-xs text-slate-500">
+                    {!blockReason ? "Capture live photo proof with on-site GPS watermark" : blockReason}
                   </p>
                 </div>
               </button>
             )}
           </div>
 
-          <div className="flex justify-between">
-            <Button variant="outline" size="lg" onClick={() => setStep(0)}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Step 1
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setStep(0)}
+              className="h-9 px-3.5 text-xs font-bold rounded-xl border-slate-200"
+            >
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Back
             </Button>
             <Button
-              size="lg"
+              size="sm"
               disabled={!photo || (isFirstVisit && !hasValidOfficeDetails)}
               onClick={() => setStep(2)}
-              className="font-semibold shadow-lift"
+              className="h-9 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-xs"
             >
-              Continue to Step 3 <ArrowRight className="ml-2 h-4 w-4" />
+              Continue to Step 3 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
             </Button>
           </div>
         </section>
@@ -997,25 +1008,25 @@ function VisitPage() {
 
       {/* Step 2: Purpose & Submit */}
       {step === 2 && selected && (
-        <section className="space-y-4 animate-fade-up">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-            <h2 className="mb-4 font-display text-base font-bold flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-primary" />
-              3. Complete Daily Visit Report
+        <section className="space-y-3 sm:space-y-3.5 animate-fade-up">
+          <div className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-5 shadow-xs backdrop-blur-md space-y-3">
+            <h2 className="font-display text-xs sm:text-sm md:text-base font-extrabold flex items-center gap-1.5 text-slate-900 leading-tight">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+              <span>3. Complete Daily Visit Report</span>
             </h2>
 
             {/* Visit Summary Card */}
-            <div className="mb-4 flex items-start gap-3 rounded-xl bg-accent/60 px-4 py-3 text-sm">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <div className="flex items-start gap-2.5 rounded-xl bg-sky-50/70 border border-sky-100 p-3 text-xs">
+              <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-600" />
               <div className="min-w-0">
-                <p className="font-semibold">
+                <p className="font-bold text-slate-900 text-xs sm:text-sm">
                   {[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Owner: {officeDetails.ownerName || selected.owner_name} ({officeDetails.ownerNumber || selected.owner_number})
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Owner: <strong>{officeDetails.ownerName || selected.owner_name}</strong> ({officeDetails.ownerNumber || selected.owner_number})
                 </p>
                 {photo && (
-                  <p className="mt-0.5 text-[11px] text-muted-foreground font-mono">
+                  <p className="mt-0.5 text-[10.5px] text-slate-600 font-mono">
                     Live GPS: {photo.latitude.toFixed(5)}, {photo.longitude.toFixed(5)} (±{Math.round(photo.accuracy)}m)
                   </p>
                 )}
@@ -1026,22 +1037,22 @@ function VisitPage() {
               <img
                 src={photo.rawDataUrl}
                 alt="Captured visit proof"
-                className="mb-4 max-h-48 rounded-xl border border-border object-cover"
+                className="max-h-44 w-full rounded-xl border border-slate-200 object-cover"
               />
             )}
 
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="purpose" className="text-xs font-semibold">
+            <div className="space-y-2.5">
+              <div className="space-y-1">
+                <Label htmlFor="purpose" className="text-[11px] sm:text-xs font-bold text-slate-700">
                   Visit Purpose <span className="text-destructive">*</span>
                 </Label>
                 <Select value={purpose} onValueChange={setPurpose}>
-                  <SelectTrigger id="purpose">
+                  <SelectTrigger id="purpose" className="h-9 text-xs bg-white rounded-xl border-slate-200">
                     <SelectValue placeholder="Select purpose of this visit…" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl">
                     {VISIT_PURPOSES.map((p) => (
-                      <SelectItem key={p} value={p}>
+                      <SelectItem key={p} value={p} className="text-xs">
                         {p}
                       </SelectItem>
                     ))}
@@ -1050,8 +1061,8 @@ function VisitPage() {
               </div>
 
               {purpose === "Other" && (
-                <div className="space-y-1.5 animate-fade-up">
-                  <Label htmlFor="custom-purpose" className="text-xs font-semibold">
+                <div className="space-y-1 animate-fade-up">
+                  <Label htmlFor="custom-purpose" className="text-[11px] sm:text-xs font-bold text-slate-700">
                     Describe Purpose <span className="text-destructive">*</span>
                   </Label>
                   <Input
@@ -1060,36 +1071,46 @@ function VisitPage() {
                     onChange={(e) => setCustomPurpose(e.target.value)}
                     placeholder="e.g. Document collection, manager meeting, etc."
                     maxLength={120}
+                    className="h-8.5 text-xs bg-white rounded-xl border-slate-200"
                   />
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <Label htmlFor="remarks" className="text-xs font-semibold">Remarks (Optional)</Label>
+              <div className="space-y-1">
+                <Label htmlFor="remarks" className="text-[11px] sm:text-xs font-bold text-slate-700">
+                  Remarks (Optional)
+                </Label>
                 <Textarea
                   id="remarks"
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
-                  placeholder="Notes about discussion, next follow-up, etc."
-                  rows={3}
+                  placeholder="Notes about discussion, client feedback, next follow-up…"
+                  rows={2}
+                  className="text-xs bg-white rounded-xl border-slate-200 min-h-[56px]"
                 />
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-muted/60 px-4 py-3 text-xs text-muted-foreground">
-            <Navigation className="mr-1.5 inline h-3.5 w-3.5 text-primary" />
+          <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3.5 py-2 text-[11px] sm:text-xs text-slate-600">
+            <Navigation className="mr-1.5 inline h-3.5 w-3.5 text-sky-600" />
             Submitting as <strong>{session?.profile?.name || "Employee"}</strong> ({session?.profile?.employee_id || "MEH001"})
             at <strong>{[selected.company_name, selected.location_name].filter(Boolean).join(" — ")}</strong>
           </div>
 
-          <div className="flex justify-between">
-            <Button variant="outline" size="lg" onClick={() => setStep(1)} disabled={submit.isPending}>
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Step 2
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setStep(1)}
+              disabled={submit.isPending}
+              className="h-9 px-3.5 text-xs font-bold rounded-xl border-slate-200"
+            >
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Back to Step 2
             </Button>
             <Button
-              size="lg"
-              className="font-semibold shadow-lift"
+              size="sm"
+              className="h-9 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-xs"
               disabled={submit.isPending || !finalPurpose}
               onClick={() => {
                 if (!finalPurpose) {
@@ -1099,8 +1120,8 @@ function VisitPage() {
                 submit.mutate();
               }}
             >
-              {submit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit Visit Report
+              {submit.isPending && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+              Submit Visit Report 🚀
             </Button>
           </div>
         </section>
@@ -1146,28 +1167,28 @@ function VisitPage() {
           }
         }}
       >
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl md:max-w-3xl w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-5 sm:p-7 rounded-2xl shadow-xl box-border">
-          <DialogHeader className="mb-3 pr-6">
-            <div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-              <span>Amazon Location Service Place Finder</span>
+        <DialogContent className="w-[calc(100vw-28px)] max-w-lg sm:max-w-xl max-h-[85vh] overflow-y-auto overflow-x-hidden p-3.5 sm:p-5 rounded-3xl border border-sky-100/90 bg-white/98 shadow-2xl backdrop-blur-xl box-border">
+          <DialogHeader className="mb-2.5 pr-7 text-left space-y-0.5">
+            <div className="inline-flex items-center gap-1 text-[9.5px] font-extrabold uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200/70 w-fit">
+              <Sparkles className="h-2.5 w-2.5 text-amber-500 shrink-0" />
+              <span>Amazon Place Finder</span>
             </div>
-            <DialogTitle className="font-display text-xl font-bold text-foreground">
+            <DialogTitle className="font-display text-sm sm:text-base font-extrabold text-slate-900 leading-tight pt-0.5">
               Add New Office / Client Location
             </DialogTitle>
-            <p className="text-xs text-muted-foreground">
-              Search by company name, landmark, or address to automatically pinpoint GPS coordinates.
+            <p className="text-[10.5px] sm:text-xs text-slate-500 leading-tight">
+              Search name or pin GPS to register client office.
             </p>
           </DialogHeader>
 
           {/* Amazon Place Search Bar */}
-          <div className="space-y-3 rounded-xl border border-primary/20 bg-primary/5 p-3.5">
-            <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <Search className="h-3.5 w-3.5 text-primary" />
-              Search Place / Landmark with Amazon Location Service
+          <div className="space-y-2 rounded-2xl border border-sky-100 bg-sky-50/40 p-2.5 sm:p-3">
+            <Label className="text-[10px] sm:text-[11px] font-bold text-slate-700 flex items-center gap-1">
+              <Search className="h-3 w-3 text-sky-600 shrink-0" />
+              <span>Search Place or Landmark</span>
             </Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
+            <div className="flex gap-1.5">
+              <div className="relative flex-1 min-w-0">
                 <Input
                   value={placeQuery}
                   onChange={(e) => {
@@ -1185,12 +1206,12 @@ function VisitPage() {
                       searchAmazonPlaces(placeQuery);
                     }
                   }}
-                  placeholder="Type e.g. Digital Smart Technology, WTP, Tonk Road, Sodala…"
-                  className="pr-8 bg-background"
+                  placeholder="Search company, landmark, area…"
+                  className="pr-7 bg-white h-8 text-xs rounded-xl border-slate-200"
                   autoFocus
                 />
                 {isSearchingPlaces && (
-                  <Loader2 className="absolute right-2.5 top-2.5 h-4 w-4 animate-spin text-muted-foreground" />
+                  <Loader2 className="absolute right-2 top-2 h-3.5 w-3.5 animate-spin text-muted-foreground" />
                 )}
               </div>
               <Button
@@ -1198,9 +1219,9 @@ function VisitPage() {
                 size="sm"
                 onClick={() => searchAmazonPlaces(placeQuery)}
                 disabled={isSearchingPlaces}
-                className="font-semibold gap-1 shrink-0"
+                className="font-bold gap-1 shrink-0 h-8 px-2.5 text-[11px] rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-xs"
               >
-                <Search className="h-3.5 w-3.5" /> Search
+                <Search className="h-3 w-3" /> Search
               </Button>
             </div>
 
@@ -1219,10 +1240,15 @@ function VisitPage() {
                   }));
                   toast.success(`📍 Filled current GPS coordinates: ${fix.latitude.toFixed(5)}, ${fix.longitude.toFixed(5)}`);
                 }}
-                className="w-full text-xs font-semibold gap-1.5 border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20"
+                className="w-full text-[10.5px] sm:text-xs font-bold gap-1.5 border-emerald-500/30 bg-emerald-50 text-emerald-700 hover:bg-emerald-100/80 py-1.5 px-2.5 h-auto rounded-xl flex items-center justify-between"
               >
-                <Navigation className="h-3.5 w-3.5" />
-                <span>📍 Pin My Current Live GPS ({fix.latitude.toFixed(4)}, {fix.longitude.toFixed(4)})</span>
+                <div className="flex items-center gap-1 truncate">
+                  <Navigation className="h-3 w-3 text-emerald-600 shrink-0" />
+                  <span className="truncate">Pin Live GPS</span>
+                </div>
+                <span className="font-mono text-[9.5px] bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded-md shrink-0">
+                  {fix.latitude.toFixed(4)}, {fix.longitude.toFixed(4)}
+                </span>
               </Button>
             )}
 

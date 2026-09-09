@@ -157,18 +157,20 @@ export function AppLayout() {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-sidebar-border bg-sidebar flex-col md:flex shadow-soft">
-        <div className="flex items-center gap-3 border-b border-sidebar-border px-6 py-5">
-          <img
-            src={logoUrl}
-            alt="Mehar DVR logo"
-            className="h-10 w-10 rounded-xl bg-white object-contain p-1 ring-1 ring-border shadow-xs"
-          />
+        <div className="flex items-center gap-3 border-b border-sidebar-border px-5 py-4 bg-white">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-100 bg-white shadow-xs p-1">
+            <img
+              src={logoUrl}
+              alt="Mehar DVR logo"
+              className="h-full w-full object-contain"
+            />
+          </div>
           <div>
-            <p className="font-display text-sm font-bold leading-none tracking-tight">MEHAR DVR</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Daily Visit Report</p>
+            <p className="font-display text-sm font-extrabold text-slate-900 leading-tight">Mehar DVR</p>
+            <p className="text-[10px] font-black tracking-wider text-blue-600 uppercase leading-tight mt-0.5">PORTAL</p>
           </div>
         </div>
 
@@ -243,75 +245,78 @@ export function AppLayout() {
         </div>
       </aside>
 
-      {/* Mobile top bar with notch & safe-area spacing */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card/95 px-4 pt-safe pb-3 backdrop-blur md:hidden shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <img
-            src={logoUrl}
-            alt="Mehar DVR logo"
-            className="h-8 w-8 rounded-full bg-white object-contain p-0.5 ring-1 ring-border"
-          />
-          <div>
-            <p className="font-display text-sm font-bold leading-none">MEHAR DVR</p>
-            <p className="text-[10px] text-muted-foreground">Daily Visit Report</p>
+      {/* Main Content Area: properly responsive across Mobile, Tablet, and Desktop */}
+      <div className="flex min-h-screen flex-col md:pl-72">
+        {/* Mobile top bar with notch & safe-area spacing */}
+        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border/80 bg-card/95 px-4 pt-safe pb-3 backdrop-blur md:hidden shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <img
+              src={logoUrl}
+              alt="Mehar DVR logo"
+              className="h-8 w-8 rounded-full bg-white object-contain p-0.5 ring-1 ring-border"
+            />
+            <div>
+              <p className="font-display text-sm font-bold leading-none">MEHAR DVR</p>
+              <p className="text-[10px] text-muted-foreground">Daily Visit Report</p>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {isAdmin && <AdminNotificationCenter className="h-8.5 w-8.5" />}
-          <button
-            onClick={handleSignOut}
-            aria-label="Sign out"
-            className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-destructive"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <button aria-label="Menu" className="rounded-lg p-2 text-muted-foreground hover:bg-accent">
-                <Menu className="h-5 w-5" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72 p-4 pt-safe">
-              <Link
-                to="/profile"
-                onClick={() => setMenuOpen(false)}
-                className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-accent"
-              >
-                <UserAvatar
-                  url={activeAvatarUrl}
-                  name={resolvedName}
-                  className="h-10 w-10 text-sm"
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{resolvedName}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {resolvedEmpId} {isAdmin ? "· Admin" : "· Field Staff"}
-                  </p>
-                </div>
-              </Link>
-              <nav className="space-y-1">{nav.map((item) => navLink(item, () => setMenuOpen(false)))}</nav>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </header>
+          <div className="flex items-center gap-2">
+            {isAdmin && <AdminNotificationCenter className="h-8.5 w-8.5" />}
+            <button
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-destructive cursor-pointer"
+            >
+              <LogOut className="h-5 w-5" />
+            </button>
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <button aria-label="Menu" className="rounded-lg p-2 text-muted-foreground hover:bg-accent cursor-pointer">
+                  <Menu className="h-5 w-5" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72 p-4 pt-safe">
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="mb-4 flex items-center gap-3 rounded-lg px-1 py-1 transition-colors hover:bg-accent"
+                >
+                  <UserAvatar
+                    url={activeAvatarUrl}
+                    name={resolvedName}
+                    className="h-10 w-10 text-sm"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{resolvedName}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {resolvedEmpId} {isAdmin ? "· Admin" : "· Field Staff"}
+                    </p>
+                  </div>
+                </Link>
+                <nav className="space-y-1">{nav.map((item) => navLink(item, () => setMenuOpen(false)))}</nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </header>
 
-      {/* Content with generous top padding to prevent any overlap */}
-      <main className="mx-auto w-full max-w-7xl px-4 pb-28 pt-6 sm:pt-8 md:py-8 md:pl-72 md:pr-8 md:max-w-none">
-        <Outlet />
-      </main>
+        {/* Content with responsive padding - full width without huge side blanks */}
+        <main className="w-full flex-1 px-3.5 sm:px-5 lg:px-6 pb-24 pt-3 sm:pt-5 md:py-6">
+          <Outlet />
+        </main>
+      </div>
 
       {/* Mobile bottom nav with safe-area spacing */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-card/95 backdrop-blur pb-safe pt-2 md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-slate-200/90 bg-white/95 backdrop-blur-lg pb-safe pt-1.5 md:hidden shadow-lg">
         {nav.slice(0, 5).map((item) => (
           <Link
             key={item.to}
             to={item.to}
             activeOptions={{ exact: item.to === "/dashboard" }}
-            className="flex flex-1 flex-col items-center gap-0.5 py-1.5 text-[10px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-            activeProps={{ className: "text-primary font-bold" }}
+            className="flex flex-1 flex-col items-center gap-0.5 py-1 text-[10px] font-semibold text-slate-500 transition-all hover:text-sky-600 outline-none focus:outline-none focus-visible:outline-none select-none"
+            activeProps={{ className: "text-sky-600 font-extrabold" }}
           >
-            <item.icon className={cn("h-5 w-5")} />
-            {item.label}
+            <item.icon className="h-4.5 w-4.5" />
+            <span>{item.label}</span>
           </Link>
         ))}
       </nav>

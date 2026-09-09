@@ -8,6 +8,7 @@ import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -322,38 +323,42 @@ function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 animate-fade-up">
+    <div className="mx-auto max-w-2xl space-y-3.5 sm:space-y-4 animate-fade-up">
+      {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold">My Profile</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-100 text-sky-700 text-[10px] sm:text-[11px] font-bold mb-1">
+          <UserRound className="h-3 w-3 text-sky-600 shrink-0" />
+          <span>Account Settings</span>
+        </div>
+        <h1 className="font-display text-base sm:text-xl font-extrabold text-slate-900 leading-tight">
+          My Profile
+        </h1>
+        <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
           Update your profile photo, details and account password.
         </p>
       </div>
 
       {/* Profile photo */}
-      <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-xs">
-        <h2 className="flex items-center gap-2 font-display text-base font-semibold">
-          <Camera className="h-4.5 w-4.5 text-primary" /> Profile photo
+      <section className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-5 shadow-xs backdrop-blur-md space-y-3">
+        <h2 className="flex items-center gap-1.5 font-display text-xs sm:text-sm font-extrabold text-slate-900">
+          <Camera className="h-4 w-4 text-sky-600" />
+          <span>Profile Photo</span>
         </h2>
-        <div className="mt-5 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3.5 sm:gap-4">
           {shownAvatar ? (
             <img
               src={shownAvatar}
               alt="Profile photo"
-              className="h-24 w-24 rounded-full object-cover ring-2 ring-border"
+              className="h-20 w-20 sm:h-22 sm:w-22 rounded-full object-cover ring-2 ring-sky-200 shadow-xs shrink-0"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 ring-2 ring-border">
-              {displayName ? (
-                <span className="font-display text-2xl font-bold text-primary">
-                  {initials(displayName)}
-                </span>
-              ) : (
-                <UserRound className="h-10 w-10 text-primary" />
-              )}
+            <div className="flex h-20 w-20 sm:h-22 sm:w-22 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xs">
+              <span className="font-display text-xl sm:text-2xl font-black tracking-tight">
+                {initials(displayName)}
+              </span>
             </div>
           )}
-          <div className="space-y-3">
+          <div className="space-y-2 flex-1 min-w-0">
             <input
               ref={fileRef}
               type="file"
@@ -361,37 +366,46 @@ function ProfilePage() {
               className="hidden"
               onChange={handlePick}
             />
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
                 onClick={() => fileRef.current?.click()}
                 disabled={photoBusy}
+                className="h-8 px-3 text-xs font-bold rounded-xl border-slate-200"
               >
-                <Camera className="mr-2 h-4 w-4" />
-                {shownAvatar ? "Change photo" : "Add photo"}
+                <Camera className="mr-1.5 h-3.5 w-3.5 text-sky-600" />
+                {shownAvatar ? "Change Photo" : "Add Photo"}
               </Button>
               {preview && (
-                <Button type="button" onClick={handleSavePhoto} disabled={photoBusy}>
-                  {photoBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save photo
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleSavePhoto}
+                  disabled={photoBusy}
+                  className="h-8 px-3 text-xs font-bold rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-xs"
+                >
+                  {photoBusy && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                  Save Photo
                 </Button>
               )}
               {!preview && currentSavedAvatar && (
                 <Button
                   type="button"
                   variant="ghost"
-                  className="text-destructive hover:text-destructive"
+                  size="sm"
+                  className="h-8 px-2.5 text-xs font-semibold text-destructive hover:bg-destructive/10 rounded-xl"
                   onClick={handleRemovePhoto}
                   disabled={photoBusy}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" /> Remove
+                  <Trash2 className="mr-1 h-3.5 w-3.5" /> Remove
                 </Button>
               )}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10.5px] sm:text-xs text-slate-500">
               {preview
-                ? "Preview ready — tap Save photo to apply it."
+                ? "Preview ready — tap Save Photo to update."
                 : "JPG or PNG, automatically cropped to a square."}
             </p>
           </div>
@@ -399,91 +413,118 @@ function ProfilePage() {
       </section>
 
       {/* Account details (Read-Only) */}
-      <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-xs">
-        <h2 className="flex items-center gap-2 font-display text-base font-semibold">
-          <UserRound className="h-4.5 w-4.5 text-primary" /> Account details
+      <section className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-5 shadow-xs backdrop-blur-md space-y-3">
+        <h2 className="flex items-center gap-1.5 font-display text-xs sm:text-sm font-extrabold text-slate-900">
+          <UserRound className="h-4 w-4 text-sky-600" />
+          <span>Account Details</span>
         </h2>
 
-        <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
-          <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5">
-            <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Full Name</dt>
-            <dd className="mt-1 font-bold text-foreground text-base">{displayName}</dd>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 text-xs">
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Full Name</span>
+            <p className="mt-0.5 font-bold text-slate-900 text-xs sm:text-sm truncate">{displayName}</p>
           </div>
-          <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5">
-            <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Employee ID</dt>
-            <dd className="mt-1 font-bold font-mono text-primary text-base">{displayEmpId}</dd>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Employee ID</span>
+            <div className="mt-0.5">
+              <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/80 text-xs inline-block">
+                {displayEmpId}
+              </span>
+            </div>
           </div>
-          <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5">
-            <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</dt>
-            <dd className="mt-1 font-medium text-foreground">{displayEmail}</dd>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</span>
+            <p className="mt-0.5 font-medium text-slate-800 truncate">{displayEmail}</p>
           </div>
-          <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5">
-            <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone</dt>
-            <dd className="mt-1 font-medium text-foreground">
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone</span>
+            <p className="mt-0.5 font-medium text-slate-800">
               {displayPhone ? (
                 displayPhone
               ) : (
-                <span className="text-muted-foreground italic font-normal text-xs">Not Provided</span>
+                <span className="text-slate-400 italic font-normal text-xs">Not Provided</span>
               )}
-            </dd>
+            </p>
           </div>
-          <div className="rounded-xl border border-border/50 bg-muted/20 p-3.5 sm:col-span-2">
-            <dt className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Account Role</dt>
-            <dd className={`mt-1 inline-flex items-center gap-1.5 font-semibold ${
-              isAdmin ? "text-purple-600 dark:text-purple-400" : "text-primary"
-            }`}>
-              <span className={`h-2 w-2 rounded-full ${
-                isAdmin ? "bg-purple-500" : "bg-emerald-500"
-              }`} />
-              {isAdmin ? "Administrator / Super Admin" : "Field Visiting Employee"}
-            </dd>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:col-span-2">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Account Role</span>
+            <div className="mt-1 flex items-center gap-1.5 font-bold text-xs">
+              <span
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  isAdmin ? "bg-purple-500" : "bg-emerald-500",
+                )}
+              />
+              <span className={isAdmin ? "text-purple-700" : "text-emerald-700"}>
+                {isAdmin ? "Super Admin" : "Field Visiting Employee"}
+              </span>
+            </div>
           </div>
-        </dl>
+        </div>
       </section>
 
       {/* Change password */}
-      <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-xs">
-        <h2 className="flex items-center gap-2 font-display text-base font-semibold">
-          <KeyRound className="h-4.5 w-4.5 text-primary" /> Change password
+      <section className="rounded-2xl border border-slate-100 bg-white/95 p-3.5 sm:p-5 shadow-xs backdrop-blur-md space-y-3">
+        <h2 className="flex items-center gap-1.5 font-display text-xs sm:text-sm font-extrabold text-slate-900">
+          <KeyRound className="h-4 w-4 text-sky-600" />
+          <span>Change Password</span>
         </h2>
-        <form onSubmit={handleChangePassword} className="mt-4 space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="new-password">New password</Label>
+        <form onSubmit={handleChangePassword} className="space-y-3">
+          <div className="space-y-1">
+            <Label htmlFor="new-password" className="text-[11px] sm:text-xs font-bold text-slate-700">
+              New Password
+            </Label>
             <div className="relative">
               <Input
                 id="new-password"
                 type={showPassword ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="At least 8 characters"
-                className="pr-10"
+                placeholder="At least 6 characters"
+                className="pr-9 h-8.5 text-xs bg-slate-50/60 border-slate-200 rounded-xl"
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               </button>
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="confirm-password">Confirm new password</Label>
+
+          <div className="space-y-1">
+            <Label htmlFor="confirm-password" className="text-[11px] sm:text-xs font-bold text-slate-700">
+              Confirm New Password
+            </Label>
             <Input
               id="confirm-password"
               type={showPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Repeat the new password"
+              className="h-8.5 text-xs bg-slate-50/60 border-slate-200 rounded-xl"
               autoComplete="new-password"
             />
           </div>
-          <Button type="submit" disabled={pwBusy || !newPassword || !confirmPassword}>
-            {pwBusy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Update password
-          </Button>
+
+          <div className="pt-1">
+            <Button
+              type="submit"
+              size="sm"
+              disabled={pwBusy || !newPassword || !confirmPassword}
+              className="h-9 px-4 text-xs font-bold rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-xs"
+            >
+              {pwBusy && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+              Update Password
+            </Button>
+          </div>
         </form>
       </section>
     </div>

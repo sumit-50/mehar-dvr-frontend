@@ -76,7 +76,7 @@ export async function fetchLiveAddress(lat: number, lng: number): Promise<string
   try {
     const res = await apiFetch<{ success: boolean; address?: string }>("/dvr/places/reverse-geocode", {
       method: "POST",
-      body: { lat, lng },
+      body: { latitude: lat, longitude: lng, lat, lng },
     });
     if (res?.address) {
       addressCache.set(key, res.address);

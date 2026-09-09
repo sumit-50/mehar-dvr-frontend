@@ -321,34 +321,7 @@ function AuthPage() {
       toast.success("Welcome back! Logging you in...");
       navigate({ to: "/dashboard" });
     } catch (err: any) {
-      const lowerId = idToUse.toLowerCase();
-      const cleanIdOnly = lowerId.replace(/[^a-z0-9]/g, "");
-      const isAdminLogin =
-        lowerId === "admin@meharadvisory.com" ||
-        lowerId === "meh000" ||
-        lowerId === "meh-adm-001" ||
-        cleanIdOnly === "meh000" ||
-        cleanIdOnly === "mehadm001" ||
-        cleanIdOnly === "mehadm01";
-      
-      const isCorrectAdminPass = passToUse === "Root@6378";
-
-      if (isAdminLogin && isCorrectAdminPass) {
-        const mockToken = "mock_admin_token_" + Date.now();
-        localStorage.setItem("dvr_token", mockToken);
-        localStorage.setItem("token", mockToken);
-        localStorage.setItem("dvr_user_name", "Yogendra (Admin)");
-        localStorage.setItem("dvr_user_id", "MEH-ADM-001");
-        localStorage.setItem("dvr_user_role", "admin");
-        localStorage.setItem("dvr_user_email", "admin@meharadvisory.com");
-        localStorage.removeItem("dvr_user_phone");
-        sessionStorage.setItem("mehar_alive", "1");
-        toast.success("Admin Login Successful!");
-        navigate({ to: "/dashboard" });
-        return;
-      }
-
-      setError(err instanceof Error ? err.message : "Invalid credentials. Please check your email and password.");
+      setError(err instanceof Error ? err.message : "Invalid credentials. Please check your email/identifier and password.");
     } finally {
       setLoading(false);
     }
@@ -513,120 +486,123 @@ function AuthPage() {
     }
   }
 
-
-
   return (
-    <div className="flex min-h-screen w-full bg-background text-foreground selection:bg-primary/20 selection:text-primary overflow-x-hidden">
+    <div className="flex min-h-screen w-full bg-gradient-to-br from-sky-50/80 via-blue-50/50 to-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-sky-500/20 selection:text-sky-600 overflow-x-hidden">
       
-      {/* LEFT COLUMN: Ultra-Stylish Brand & Feature Showcase */}
-      <div className="relative hidden lg:flex lg:w-[48%] xl:w-[46%] flex-col justify-between overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-950 p-12 text-white shadow-2xl">
+      {/* LEFT COLUMN: Ultra-Stylish Luminous Light Blue Showcase */}
+      <div className="relative hidden lg:flex lg:w-[48%] xl:w-[46%] flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-100/80 via-sky-50/90 to-blue-50/70 p-12 text-slate-900 border-r border-sky-200/80 shadow-xl">
         
-        {/* Dynamic Background Mesh & Ambient Glows */}
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:28px_28px]" />
-        <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-sky-400/25 blur-[120px]" />
-        <div className="pointer-events-none absolute bottom-10 right-10 h-80 w-80 rounded-full bg-indigo-500/25 blur-[130px]" />
+        {/* Ambient Light Blue Pastel Glows & Soft Mesh Background */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#bae6fd_1px,transparent_1px)] [background-size:24px_24px] opacity-70" />
+        <div className="pointer-events-none absolute -top-20 -left-20 h-96 w-96 rounded-full bg-sky-300/35 blur-[100px]" />
+        <div className="pointer-events-none absolute bottom-10 right-10 h-80 w-80 rounded-full bg-blue-200/40 blur-[120px]" />
+        <div className="pointer-events-none absolute top-1/2 left-1/3 h-64 w-64 rounded-full bg-cyan-200/35 blur-[90px]" />
 
         {/* Top Header Logo */}
         <div className="relative z-10 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3.5 group">
             <div className="relative">
               <img
                 src={logoUrl}
                 alt="Mehar DVR logo"
-                className="h-11 w-11 rounded-2xl bg-white object-contain p-1.5 shadow-lg ring-2 ring-white/20 transition-transform group-hover:scale-105"
+                className="h-11 w-11 rounded-2xl bg-white object-contain p-1.5 shadow-md ring-2 ring-sky-200 transition-transform group-hover:scale-105"
               />
-              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-400 ring-2 ring-indigo-950">
+              <span className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white">
                 <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" />
               </span>
             </div>
             <div>
-              <p className="font-display text-lg font-black tracking-tight text-white leading-none">
+              <p className="font-display text-lg font-black tracking-tight bg-gradient-to-r from-sky-900 via-blue-900 to-sky-950 bg-clip-text text-transparent leading-none">
                 MEHAR DVR
               </p>
-              <p className="text-xs text-sky-200/90 font-medium mt-1">
+              <p className="text-xs text-sky-700/85 font-bold mt-1">
                 Daily Visit Report Portal
               </p>
             </div>
           </Link>
 
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-bold text-sky-200 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-sky-300" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 border border-sky-200 px-3.5 py-1 text-xs font-bold text-sky-700 shadow-xs backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-sky-500" />
             Verified GPS 2.0
           </span>
         </div>
 
-        {/* Middle Hero Showcase & Floating Verification Badge */}
+        {/* Middle Hero Showcase & Floating Verification Features */}
         <div className="relative z-10 my-auto py-8 space-y-6">
           <div className="space-y-3 max-w-lg">
-            <h2 className="font-display text-3xl xl:text-4xl font-black leading-[1.18] text-white tracking-tight">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-sky-100/90 border border-sky-300/80 text-sky-800 text-xs font-extrabold shadow-2xs">
+              <ShieldCheck className="h-3.5 w-3.5 text-sky-600" />
+              Enterprise Field Attendance
+            </div>
+            <h2 className="font-display text-3xl xl:text-4xl font-black leading-[1.2] text-slate-900 tracking-tight">
               GPS-verified field visits,{" "}
-              <span className="bg-gradient-to-r from-sky-200 via-white to-sky-100 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 photo proof on every report.
               </span>
             </h2>
-            <p className="text-sky-100/85 text-sm xl:text-base leading-relaxed font-normal">
+            <p className="text-slate-600 text-sm xl:text-base leading-relaxed font-normal">
               Mehar DVR enforces strict physical attendance within 100 meters of approved client branches, permanently stamping verified coordinates and timestamps onto camera captures.
             </p>
           </div>
 
-          {/* Holographic Feature List */}
-          <div className="space-y-3 max-w-md pt-1">
-            <div className="flex items-center gap-3.5 rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md shadow-sm transition-all hover:bg-white/15">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-sky-200 shrink-0">
+          {/* Frosted Light Blue Feature Cards */}
+          <div className="space-y-3.5 max-w-md pt-1">
+            <div className="flex items-center gap-3.5 rounded-2xl border border-sky-200/90 bg-white/85 p-3.5 backdrop-blur-md shadow-[0_4px_18px_rgba(14,165,233,0.07)] transition-all hover:shadow-[0_8px_25px_rgba(14,165,233,0.14)] hover:border-sky-300">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-500 to-blue-500 text-white shadow-md shadow-sky-500/25 shrink-0">
                 <MapPin className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white">Fixed Admin Locations</p>
-                <p className="text-[11px] text-sky-200/80 truncate">Strict 100m radius check before camera unlocks</p>
+                <p className="text-xs font-extrabold text-sky-950">Fixed Admin Locations</p>
+                <p className="text-[11px] text-slate-500 truncate">Strict 100m radius check before camera unlocks</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3.5 rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md shadow-sm transition-all hover:bg-white/15">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-emerald-300 shrink-0">
+            <div className="flex items-center gap-3.5 rounded-2xl border border-sky-200/90 bg-white/85 p-3.5 backdrop-blur-md shadow-[0_4px_18px_rgba(14,165,233,0.07)] transition-all hover:shadow-[0_8px_25px_rgba(14,165,233,0.14)] hover:border-sky-300">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-500/25 shrink-0">
                 <ShieldCheck className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white">Server-Side Distance Validation</p>
-                <p className="text-[11px] text-sky-200/80 truncate">Dual Haversine formula calculation on device & server</p>
+                <p className="text-xs font-extrabold text-sky-950">Server-Side Distance Validation</p>
+                <p className="text-[11px] text-slate-500 truncate">Dual Haversine formula calculation on device & server</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3.5 rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md shadow-sm transition-all hover:bg-white/15">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-violet-300 shrink-0">
+            <div className="flex items-center gap-3.5 rounded-2xl border border-sky-200/90 bg-white/85 p-3.5 backdrop-blur-md shadow-[0_4px_18px_rgba(14,165,233,0.07)] transition-all hover:shadow-[0_8px_25px_rgba(14,165,233,0.14)] hover:border-sky-300">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-500 text-white shadow-md shadow-sky-600/25 shrink-0">
                 <Lock className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white">Permanent Photo Watermark</p>
-                <p className="text-[11px] text-sky-200/80 truncate">Immutable timestamp, coordinates & purpose overlay</p>
+                <p className="text-xs font-extrabold text-sky-950">Permanent Photo Watermark</p>
+                <p className="text-[11px] text-slate-500 truncate">Immutable timestamp, coordinates & purpose overlay</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Footer */}
-        <div className="relative z-10 flex items-center justify-between text-xs text-sky-200/75 border-t border-white/15 pt-4">
+        <div className="relative z-10 flex items-center justify-between text-xs text-sky-800/80 border-t border-sky-200/70 pt-4 font-semibold">
           <p>© {new Date().getFullYear()} Mehar Advisory</p>
-          <p className="font-medium text-white/90">Internal Field Operations</p>
+          <p className="text-sky-950 font-bold">Internal Field Operations</p>
         </div>
       </div>
 
       {/* RIGHT COLUMN: Stylish Clean Form Panel */}
-      <div className="relative flex flex-1 flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16">
+      <div className="relative flex flex-1 flex-col justify-between p-4 sm:p-8 lg:p-12 xl:p-16">
         
         {/* Mobile Header Logo */}
-        <div className="flex items-center justify-between lg:hidden mb-6">
-          <Link to="/" className="flex items-center gap-3">
+        <div className="flex items-center justify-between lg:hidden mb-4 sm:mb-6">
+          <Link to="/" className="flex items-center gap-2.5">
             <img
               src={logoUrl}
               alt="Mehar DVR logo"
-              className="h-10 w-10 rounded-xl bg-white object-contain p-1 ring-1 ring-border shadow-xs"
+              className="h-9 w-9 rounded-xl bg-white object-contain p-1 ring-1 ring-sky-200 shadow-2xs"
             />
             <div>
-              <p className="font-display text-base font-black leading-none text-foreground">MEHAR DVR</p>
-              <p className="text-xs text-muted-foreground">Daily Visit Report Portal</p>
+              <p className="font-display text-sm font-black leading-none bg-gradient-to-r from-sky-900 to-blue-900 bg-clip-text text-transparent">MEHAR DVR</p>
+              <p className="text-[10.5px] text-sky-700 font-medium">Daily Visit Report Portal</p>
             </div>
           </Link>
-          <Link to="/" className="text-xs font-semibold text-primary">
+          <Link to="/" className="text-xs font-bold text-sky-600 hover:text-sky-700">
             ← Home
           </Link>
         </div>
@@ -634,37 +610,39 @@ function AuthPage() {
         {/* Centered Auth Card Container */}
         <div className="my-auto mx-auto w-full max-w-md animate-fade-up">
           
-          <div className="rounded-3xl border border-border/80 bg-card/95 p-7 sm:p-9 shadow-2xl backdrop-blur-xl ring-1 ring-black/5 dark:ring-white/10">
+          <div className="rounded-2xl sm:rounded-3xl border border-sky-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 p-5 sm:p-8 shadow-[0_15px_40px_rgba(14,165,233,0.08)] backdrop-blur-xl ring-1 ring-sky-400/10">
             
             {/* Top Switcher: Sign In vs Sign Up */}
-            <div className="mb-6 flex rounded-2xl border border-border/80 bg-muted/60 p-1.5 shadow-inner">
+            <div className="mb-4 sm:mb-5 flex rounded-xl border border-sky-200/80 dark:border-slate-700/80 bg-sky-50/70 dark:bg-slate-800/60 p-1 shadow-inner">
               <button
                 type="button"
+                suppressHydrationWarning
                 onClick={() => {
                   setTab("signin");
                   setError(null);
                   setSignUpStep("form");
                 }}
                 className={cn(
-                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
+                  "flex-1 rounded-lg py-2 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
                   tab === "signin"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "bg-white text-sky-700 dark:bg-slate-900 dark:text-white shadow-2xs border border-sky-200/80"
+                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
                 )}
               >
                 Sign In (Login)
               </button>
               <button
                 type="button"
+                suppressHydrationWarning
                 onClick={() => {
                   setTab("signup");
                   setError(null);
                 }}
                 className={cn(
-                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
+                  "flex-1 rounded-lg py-2 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
                   tab === "signup"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "bg-white text-sky-700 dark:bg-slate-900 dark:text-white shadow-2xs border border-sky-200/80"
+                    : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
                 )}
               >
                 Create Account
@@ -673,67 +651,69 @@ function AuthPage() {
 
             {tab === "signin" ? (
               <div className="animate-fade-up">
-                <div className="space-y-1">
-                  <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                <div className="space-y-0.5">
+                  <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                     Sign In
                   </h1>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Choose your preferred sign in method
                   </p>
                 </div>
 
                 {/* 2-Method Switcher Tabs */}
-                <div className="mt-4 flex items-center rounded-2xl bg-muted/60 p-1 border border-border/60">
+                <div className="mt-3.5 flex items-center rounded-xl bg-sky-50/60 dark:bg-slate-800/50 p-1 border border-sky-200/70 dark:border-slate-700/60">
                   <button
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => {
                       setLoginMethod("password");
                       setError(null);
                     }}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
+                      "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
                       loginMethod === "password"
-                        ? "bg-card text-blue-600 shadow-xs border border-border/40"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? "bg-white text-sky-700 dark:bg-slate-900 dark:text-sky-400 shadow-2xs border border-sky-200"
+                        : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
                     )}
                   >
-                    <KeyRound className="h-3.5 w-3.5 text-blue-600" />
+                    <KeyRound className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                     Password Login
                   </button>
                   <button
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => {
                       setLoginMethod("otp");
                       setError(null);
                     }}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-2 rounded-xl py-2 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
+                      "flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer text-center",
                       loginMethod === "otp"
-                        ? "bg-card text-blue-600 shadow-xs border border-border/40"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? "bg-white text-sky-700 dark:bg-slate-900 dark:text-sky-400 shadow-2xs border border-sky-200"
+                        : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white",
                     )}
                   >
-                    <Smartphone className="h-3.5 w-3.5 text-blue-600" />
+                    <Smartphone className="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                     Mobile OTP Login
                   </button>
                 </div>
 
                 {loginMethod === "password" ? (
-                  <form onSubmit={handleLogin} className="mt-5 space-y-4">
+                  <form onSubmit={handleLogin} className="mt-4 space-y-3.5">
                     {/* 1. EMAIL OR EMPLOYEE ID */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="identifier" className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                    <div className="space-y-1">
+                      <Label htmlFor="identifier" className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         EMAIL OR EMPLOYEE ID
                       </Label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                         <Input
                           id="identifier"
                           type="text"
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
                           placeholder="admin@meharadvisory.com or MEH000"
-                          className="pl-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                          className="pl-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 dark:text-white placeholder:text-slate-400 shadow-2xs transition-all"
                           autoComplete="username"
                           required
                         />
@@ -741,27 +721,28 @@ function AuthPage() {
                     </div>
 
                     {/* 2. PASSWORD */}
-                    <div className="space-y-1.5">
-                      <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                    <div className="space-y-1">
+                      <Label htmlFor="password" className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         PASSWORD
                       </Label>
                       <div className="relative">
-                        <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                        <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                         <Input
                           id="password"
                           type={showPassword ? "text" : "password"}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="Enter your password"
-                          className="pl-10 pr-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                          className="pl-9 pr-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 dark:text-white placeholder:text-slate-400 shadow-2xs transition-all"
                           autoComplete="current-password"
                           required
                         />
                         <button
                           type="button"
+                          suppressHydrationWarning
                           onClick={() => setShowPassword((s) => !s)}
                           aria-label={showPassword ? "Hide password" : "Show password"}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-sky-600 cursor-pointer transition-colors p-1"
                         >
                           {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         </button>
@@ -769,16 +750,17 @@ function AuthPage() {
                     </div>
 
                     {error && (
-                      <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive font-medium">
-                        {error}
-                      </p>
+                      <div className="rounded-xl border border-red-200 dark:border-red-800/50 bg-red-50/90 dark:bg-red-950/30 p-2.5 text-xs text-red-700 dark:text-red-300 font-medium flex items-start gap-2 shadow-2xs animate-fade-in">
+                        <span className="text-red-500 font-bold shrink-0 mt-0.5">⚠️</span>
+                        <span>{error}</span>
+                      </div>
                     )}
 
                     {/* Sign In Button */}
                     <Button
                       type="submit"
-                      size="lg"
-                      className="w-full h-12 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/25 cursor-pointer text-sm flex items-center justify-center gap-2"
+                      size="default"
+                      className="w-full h-10 sm:h-11 rounded-xl font-bold bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:via-sky-700 hover:to-blue-700 text-white shadow-md shadow-sky-500/20 hover:shadow-sky-500/30 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
                       disabled={loading}
                     >
                       {loading ? (
@@ -791,7 +773,7 @@ function AuthPage() {
                     </Button>
 
                     {/* Forgot Password Link & Multi-Step Dialog */}
-                    <div className="text-center pt-1">
+                    <div className="text-center pt-0.5">
                       <Dialog
                         open={resetOpen}
                         onOpenChange={(open) => {
@@ -807,6 +789,7 @@ function AuthPage() {
                       >
                         <button
                           type="button"
+                          suppressHydrationWarning
                           onClick={() => {
                             const candidate =
                               identifier.trim() ||
@@ -823,37 +806,37 @@ function AuthPage() {
                         >
                           Forgot Password?
                         </button>
-                        <DialogContent className="sm:max-w-md rounded-2xl p-6">
+                        <DialogContent className="sm:max-w-md rounded-2xl p-5 sm:p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-2xl">
                           {resetStep === "email" ? (
                             /* Step 1: Match Email ID / Employee ID */
-                            <div className="space-y-4">
+                            <div className="space-y-3.5">
                               <DialogHeader>
-                                <DialogTitle className="font-display text-lg font-bold flex items-center gap-2 text-foreground">
-                                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600">
-                                    <KeyRound className="h-4.5 w-4.5" />
+                                <DialogTitle className="font-display text-base sm:text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+                                    <KeyRound className="h-4 w-4" />
                                   </div>
                                   Forgot Password
                                 </DialogTitle>
                               </DialogHeader>
 
-                              <p className="text-xs text-muted-foreground leading-relaxed">
+                              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                                 Enter your registered <strong>Email ID</strong> or <strong>Employee ID</strong>. We will send a secure 6-digit verification code to your registered email and mobile number.
                               </p>
 
-                              <form onSubmit={handleRequestResetOtp} className="space-y-3.5 pt-1">
-                                <div className="space-y-1.5">
-                                  <Label htmlFor="reset-email-input" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                              <form onSubmit={handleRequestResetOtp} className="space-y-3 pt-1">
+                                <div className="space-y-1">
+                                  <Label htmlFor="reset-email-input" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                                     Registered Email or Employee ID
                                   </Label>
                                   <div className="relative">
-                                    <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                                    <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                                     <Input
                                       id="reset-email-input"
                                       type="text"
                                       value={resetEmail}
                                       onChange={(e) => setResetEmail(e.target.value)}
                                       placeholder="e.g. user@gmail.com or MEH002"
-                                      className="pl-10 h-11 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground"
+                                      className="pl-9 h-10 text-xs sm:text-sm rounded-xl bg-slate-50/60 border-slate-200 focus:bg-white text-slate-900 dark:bg-slate-900/60 dark:border-slate-700 dark:text-white"
                                       required
                                       autoFocus
                                     />
@@ -861,14 +844,14 @@ function AuthPage() {
                                 </div>
 
                                 {resetError && (
-                                  <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive font-medium">
+                                  <div className="rounded-xl border border-red-200 bg-red-50/90 p-2.5 text-xs text-red-700 font-medium">
                                     {resetError}
-                                  </p>
+                                  </div>
                                 )}
 
                                 <Button
                                   type="submit"
-                                  className="w-full h-11 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 text-xs"
+                                  className="w-full h-10 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/20 text-xs"
                                   disabled={resetLoading || !resetEmail.trim()}
                                 >
                                   {resetLoading ? (
@@ -882,48 +865,49 @@ function AuthPage() {
                             </div>
                           ) : (
                             /* Step 2: Verify OTP on Email / Phone & Set New Password */
-                            <div className="space-y-4 animate-fade-up">
+                            <div className="space-y-3.5 animate-fade-up">
                               <button
                                 type="button"
+                                suppressHydrationWarning
                                 onClick={() => {
                                   setResetStep("email");
                                   setResetError(null);
                                 }}
-                                className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+                                className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
                               >
                                 <ArrowLeft className="h-3.5 w-3.5" /> Back to Change Email
                               </button>
 
                               <DialogHeader>
-                                <DialogTitle className="font-display text-lg font-bold flex items-center gap-2 text-foreground">
-                                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600">
-                                    <ShieldCheck className="h-4.5 w-4.5" />
+                                <DialogTitle className="font-display text-base sm:text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-white">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100">
+                                    <ShieldCheck className="h-4 w-4" />
                                   </div>
                                   Verify OTP & Reset Password
                                 </DialogTitle>
                               </DialogHeader>
 
-                              <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-3 text-xs text-muted-foreground space-y-1">
+                              <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-2.5 text-xs text-slate-600 space-y-1">
                                 <div>
                                   We sent a 6-digit security code to:
                                 </div>
-                                <div className="font-mono text-foreground font-semibold flex flex-wrap gap-2 pt-0.5">
+                                <div className="font-mono text-slate-900 font-semibold flex flex-wrap gap-1.5 pt-0.5">
                                   {resetMaskedEmail && (
-                                    <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-white text-blue-700 px-2 py-0.5 rounded-md border border-blue-200 text-xs shadow-2xs">
                                       📧 {resetMaskedEmail}
                                     </span>
                                   )}
                                   {resetMaskedPhone && (
-                                    <span className="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800 text-xs">
+                                    <span className="inline-flex items-center gap-1 bg-white text-emerald-700 px-2 py-0.5 rounded-md border border-emerald-200 text-xs shadow-2xs">
                                       📱 +91 {resetMaskedPhone}
                                     </span>
                                   )}
                                 </div>
                               </div>
-                              <form onSubmit={handleVerifyResetOtp} className="space-y-3.5">
+                              <form onSubmit={handleVerifyResetOtp} className="space-y-3">
                                 {/* 6-Digit OTP */}
-                                <div className="space-y-1.5">
-                                  <Label className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                                <div className="space-y-1">
+                                  <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                                     6-Digit Verification Code (OTP)
                                   </Label>
                                   <div className="flex justify-center py-1">
@@ -935,39 +919,40 @@ function AuthPage() {
                                         if (val.length === 6) setResetError(null);
                                       }}
                                     >
-                                      <InputOTPGroup className="gap-1.5 sm:gap-2">
-                                        <InputOTPSlot index={0} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
-                                        <InputOTPSlot index={1} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
-                                        <InputOTPSlot index={2} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
-                                        <InputOTPSlot index={3} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
-                                        <InputOTPSlot index={4} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
-                                        <InputOTPSlot index={5} className="h-10 w-10 sm:h-11 sm:w-11 text-base font-bold rounded-xl" />
+                                      <InputOTPGroup className="gap-1 sm:gap-2">
+                                        <InputOTPSlot index={0} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
+                                        <InputOTPSlot index={1} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
+                                        <InputOTPSlot index={2} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
+                                        <InputOTPSlot index={3} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
+                                        <InputOTPSlot index={4} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
+                                        <InputOTPSlot index={5} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50" />
                                       </InputOTPGroup>
                                     </InputOTP>
                                   </div>
                                 </div>
 
                                 {/* New Password */}
-                                <div className="space-y-1.5">
-                                  <Label htmlFor="reset-new-pass" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                                <div className="space-y-1">
+                                  <Label htmlFor="reset-new-pass" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                                     New Password (min 6 characters)
                                   </Label>
                                   <div className="relative">
-                                    <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                                     <Input
                                       id="reset-new-pass"
                                       type={resetShowPassword ? "text" : "password"}
                                       value={resetNewPassword}
                                       onChange={(e) => setResetNewPassword(e.target.value)}
                                       placeholder="Enter new password"
-                                      className="pl-10 pr-10 h-11 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground"
+                                      className="pl-9 pr-9 h-10 text-xs sm:text-sm rounded-xl bg-slate-50/60 border-slate-200 focus:bg-white text-slate-900"
                                       autoComplete="new-password"
                                       required
                                     />
                                     <button
                                       type="button"
+                                      suppressHydrationWarning
                                       onClick={() => setResetShowPassword((s) => !s)}
-                                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer"
+                                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer p-1"
                                     >
                                       {resetShowPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
@@ -975,19 +960,19 @@ function AuthPage() {
                                 </div>
 
                                 {/* Confirm New Password */}
-                                <div className="space-y-1.5">
-                                  <Label htmlFor="reset-confirm-pass" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                                <div className="space-y-1">
+                                  <Label htmlFor="reset-confirm-pass" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                                     Confirm New Password
                                   </Label>
                                   <div className="relative">
-                                    <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                                    <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                                     <Input
                                       id="reset-confirm-pass"
                                       type={resetShowPassword ? "text" : "password"}
                                       value={resetConfirmPassword}
                                       onChange={(e) => setResetConfirmPassword(e.target.value)}
                                       placeholder="Repeat new password"
-                                      className="pl-10 h-11 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground"
+                                      className="pl-9 h-10 text-xs sm:text-sm rounded-xl bg-slate-50/60 border-slate-200 focus:bg-white text-slate-900"
                                       autoComplete="new-password"
                                       required
                                     />
@@ -995,14 +980,14 @@ function AuthPage() {
                                 </div>
 
                                 {resetError && (
-                                  <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive text-center font-medium">
+                                  <div className="rounded-xl border border-red-200 bg-red-50/90 p-2.5 text-xs text-red-700 text-center font-medium">
                                     {resetError}
-                                  </p>
+                                  </div>
                                 )}
 
                                 <Button
                                   type="submit"
-                                  className="w-full h-11 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20 text-xs"
+                                  className="w-full h-10 rounded-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-600/20 text-xs"
                                   disabled={resetLoading || resetOtp.length !== 6 || !resetNewPassword || !resetConfirmPassword}
                                 >
                                   {resetLoading ? (
@@ -1013,12 +998,13 @@ function AuthPage() {
                                   Reset & Save Password
                                 </Button>
 
-                                <div className="flex items-center justify-end pt-1 text-xs">
+                                <div className="flex items-center justify-end pt-0.5 text-xs">
                                   <button
                                     type="button"
+                                    suppressHydrationWarning
                                     disabled={resetTimer > 0 || resetLoading}
                                     onClick={handleRequestResetOtp}
-                                    className="flex items-center gap-1 font-bold text-blue-600 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer"
+                                    className="flex items-center gap-1 font-bold text-blue-600 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer text-xs"
                                   >
                                     <RotateCcw className="h-3 w-3" />
                                     {resetTimer > 0 ? `Resend OTP in ${resetTimer}s` : "Resend OTP"}
@@ -1115,15 +1101,15 @@ function AuthPage() {
                             }
                           }
                     }
-                    className="mt-5 space-y-4"
+                    className="mt-4 space-y-3.5"
                   >
                     {otpLoginStep === "phone" ? (
-                      <div className="space-y-1.5">
-                        <Label htmlFor="login-phone" className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                      <div className="space-y-1">
+                        <Label htmlFor="login-phone" className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                           MOBILE NUMBER
                         </Label>
                         <div className="relative">
-                          <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                          <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                           <Input
                             id="login-phone"
                             type="tel"
@@ -1131,7 +1117,7 @@ function AuthPage() {
                             value={otpLoginPhone}
                             onChange={(e) => setOtpLoginPhone(e.target.value.replace(/\D/g, ""))}
                             placeholder="Enter 10 digit mobile"
-                            className="pl-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                            className="pl-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-slate-50/60 hover:bg-slate-50 focus:bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-blue-500/15 focus-visible:border-blue-600 shadow-2xs"
                             required
                           />
                         </div>
@@ -1139,26 +1125,27 @@ function AuthPage() {
                     ) : (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100">
+                          <Label className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                             ENTER 6-DIGIT OTP
                           </Label>
                           <button
                             type="button"
+                            suppressHydrationWarning
                             onClick={() => setOtpLoginStep("phone")}
                             className="text-[11px] text-blue-600 font-bold hover:underline"
                           >
                             Change Number
                           </button>
                         </div>
-                        <div className="flex justify-center py-2">
+                        <div className="flex justify-center py-1">
                           <InputOTP maxLength={6} value={otpLoginCode} onChange={setOtpLoginCode}>
-                            <InputOTPGroup className="gap-2">
-                              <InputOTPSlot index={0} className="h-11 w-11 text-base font-bold rounded-xl" />
-                              <InputOTPSlot index={1} className="h-11 w-11 text-base font-bold rounded-xl" />
-                              <InputOTPSlot index={2} className="h-11 w-11 text-base font-bold rounded-xl" />
-                              <InputOTPSlot index={3} className="h-11 w-11 text-base font-bold rounded-xl" />
-                              <InputOTPSlot index={4} className="h-11 w-11 text-base font-bold rounded-xl" />
-                              <InputOTPSlot index={5} className="h-11 w-11 text-base font-bold rounded-xl" />
+                            <InputOTPGroup className="gap-1 sm:gap-2">
+                              <InputOTPSlot index={0} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
+                              <InputOTPSlot index={1} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
+                              <InputOTPSlot index={2} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
+                              <InputOTPSlot index={3} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
+                              <InputOTPSlot index={4} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
+                              <InputOTPSlot index={5} className="h-9 w-9 sm:h-10 sm:w-10 text-sm sm:text-base font-bold rounded-lg border-slate-200 bg-slate-50 text-slate-900" />
                             </InputOTPGroup>
                           </InputOTP>
                         </div>
@@ -1166,15 +1153,15 @@ function AuthPage() {
                     )}
 
                     {error && (
-                      <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive font-medium">
+                      <div className="rounded-xl border border-red-200 bg-red-50/90 p-2.5 text-xs text-red-700 font-medium">
                         {error}
-                      </p>
+                      </div>
                     )}
 
                     <Button
                       type="submit"
-                      size="lg"
-                      className="w-full h-12 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/25 cursor-pointer text-sm flex items-center justify-center gap-2"
+                      size="default"
+                      className="w-full h-10 sm:h-11 rounded-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-700 hover:via-indigo-700 hover:to-blue-700 text-white shadow-md shadow-blue-500/20 cursor-pointer text-xs sm:text-sm flex items-center justify-center gap-1.5"
                       disabled={otpLoginLoading}
                     >
                       {otpLoginLoading ? (
@@ -1193,11 +1180,12 @@ function AuthPage() {
                 )}
 
                 {/* Don't have an account? Sign Up */}
-                <div className="border-t border-border/60 pt-4 mt-5 text-center">
-                  <span className="text-xs text-muted-foreground">
+                <div className="border-t border-slate-200/80 dark:border-slate-800 pt-3.5 mt-4 text-center">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     Don't have an account?{" "}
                     <button
                       type="button"
+                      suppressHydrationWarning
                       onClick={() => {
                         setTab("signup");
                         setError(null);
@@ -1210,19 +1198,21 @@ function AuthPage() {
                 </div>
 
                 {/* Footer Links */}
-                <div className="flex items-center justify-center gap-2.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider pt-3">
+                <div className="flex items-center justify-center gap-2.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider pt-2.5">
                   <button
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => setPrivacyOpen(true)}
-                    className="hover:text-foreground cursor-pointer transition-colors"
+                    className="hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer transition-colors"
                   >
                     PRIVACY POLICY
                   </button>
                   <span>•</span>
                   <button
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => setTermsOpen(true)}
-                    className="hover:text-foreground cursor-pointer transition-colors"
+                    className="hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer transition-colors"
                   >
                     TERMS OF SERVICE
                   </button>
@@ -1230,11 +1220,11 @@ function AuthPage() {
 
                 {/* Dialog: Privacy Policy */}
                 <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
-                  <DialogContent className="sm:max-w-md rounded-2xl">
+                  <DialogContent className="sm:max-w-md rounded-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 sm:p-6">
                     <DialogHeader>
-                      <DialogTitle className="font-display font-bold">Privacy Policy</DialogTitle>
+                      <DialogTitle className="font-display font-bold text-slate-900 dark:text-white">Privacy Policy</DialogTitle>
                     </DialogHeader>
-                    <div className="text-xs text-muted-foreground space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <div className="text-xs text-slate-600 dark:text-slate-400 space-y-2 max-h-60 overflow-y-auto pr-1">
                       <p>Mehar Advisory Private Limited respects your privacy and is committed to protecting all field employee location and visit data.</p>
                       <p>GPS coordinates and selfie verifications are collected exclusively during official business visits to verify visit integrity.</p>
                     </div>
@@ -1243,11 +1233,11 @@ function AuthPage() {
 
                 {/* Dialog: Terms of Service */}
                 <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
-                  <DialogContent className="sm:max-w-md rounded-2xl">
+                  <DialogContent className="sm:max-w-md rounded-2xl bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 sm:p-6">
                     <DialogHeader>
-                      <DialogTitle className="font-display font-bold">Terms of Service</DialogTitle>
+                      <DialogTitle className="font-display font-bold text-slate-900 dark:text-white">Terms of Service</DialogTitle>
                     </DialogHeader>
-                    <div className="text-xs text-muted-foreground space-y-2 max-h-60 overflow-y-auto pr-1">
+                    <div className="text-xs text-slate-600 dark:text-slate-400 space-y-2 max-h-60 overflow-y-auto pr-1">
                       <p>By using the Mehar DVR Portal, you agree to record daily business visits accurately and within designated geo-fenced perimeters.</p>
                     </div>
                   </DialogContent>
@@ -1256,86 +1246,86 @@ function AuthPage() {
             ) : signUpStep === "form" ? (
               <div className="animate-fade-up">
                 {/* Progress bar matching design */}
-                <div className="w-full flex items-center gap-1.5 mb-5">
+                <div className="w-full flex items-center gap-1.5 mb-4">
                   <div className="h-1.5 flex-1 rounded-full bg-blue-600" />
                   <div className="h-1.5 flex-1 rounded-full bg-slate-200 dark:bg-slate-700" />
                 </div>
 
-                <div className="space-y-1">
-                  <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <div className="space-y-0.5">
+                  <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                     Create Account
                   </h1>
-                  <p className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-xs font-semibold text-sky-600 dark:text-sky-400">
                     Join Mehar Finance team
                   </p>
                 </div>
 
-                <form onSubmit={handleSendOtp} className="mt-5 space-y-4">
+                <form onSubmit={handleSendOtp} className="mt-4 space-y-3">
                   {/* 1. Full Name */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="signup-name" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-name" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       Full Name
                     </Label>
                     <div className="relative">
-                      <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                      <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                       <Input
                         id="signup-name"
                         value={signUpName}
                         onChange={(e) => setSignUpName(e.target.value)}
                         placeholder="Enter your full name (e.g. Sumit Pandit)"
-                        className="pl-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                        className="pl-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 placeholder:text-slate-400 shadow-2xs transition-all"
                         required
                       />
                     </div>
                   </div>
 
                   {/* Dynamic Assigned Employee ID */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="signup-empid" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                      <Label htmlFor="signup-empid" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                         Assigned Employee ID
                       </Label>
-                      <span className="text-[10px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950/60 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                      <span className="text-[10px] text-sky-700 font-extrabold bg-sky-100 px-2 py-0.5 rounded-full border border-sky-200">
                         100 Series (Auto)
                       </span>
                     </div>
                     <div className="relative">
-                      <Hash className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                      <Hash className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                       <Input
                         id="signup-empid"
                         value={signUpEmployeeId}
                         onChange={(e) => setSignUpEmployeeId(e.target.value.toUpperCase())}
                         placeholder="e.g. MEHSP101"
-                        className="pl-10 h-12 text-sm font-mono font-bold tracking-wider rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-blue-700 dark:text-blue-400 focus-visible:ring-blue-500"
+                        className="pl-9 h-10 sm:h-11 text-xs sm:text-sm font-mono font-extrabold tracking-wider rounded-xl bg-sky-50/50 border-sky-200 text-sky-800 focus:bg-white focus-visible:ring-2 focus-visible:ring-sky-500/15 focus-visible:border-sky-500 shadow-2xs"
                       />
                     </div>
                   </div>
 
                   {/* 2. Email Address */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="signup-email" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-email" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       Email Address
                     </Label>
                     <div className="relative">
-                      <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                      <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                       <Input
                         id="signup-email"
                         type="email"
                         value={signUpEmail}
                         onChange={(e) => setSignUpEmail(e.target.value)}
                         placeholder="you@example.com"
-                        className="pl-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                        className="pl-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 placeholder:text-slate-400 shadow-2xs transition-all"
                       />
                     </div>
                   </div>
 
                   {/* 3. Mobile Number */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="signup-phone" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-phone" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       Mobile Number
                     </Label>
                     <div className="relative">
-                      <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                      <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                       <Input
                         id="signup-phone"
                         type="tel"
@@ -1343,33 +1333,34 @@ function AuthPage() {
                         value={signUpPhone}
                         onChange={(e) => setSignUpPhone(e.target.value.replace(/\D/g, ""))}
                         placeholder="Enter 10 digit mobile"
-                        className="pl-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                        className="pl-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 placeholder:text-slate-400 shadow-2xs transition-all"
                         required
                       />
                     </div>
                   </div>
 
                   {/* 4. Password */}
-                  <div className="space-y-1.5">
-                    <Label htmlFor="signup-password" className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                  <div className="space-y-1">
+                    <Label htmlFor="signup-password" className="text-xs font-bold text-slate-700 dark:text-slate-300">
                       Password
                     </Label>
                     <div className="relative">
-                      <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-blue-600" />
+                      <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-500" />
                       <Input
                         id="signup-password"
                         type={signUpShowPassword ? "text" : "password"}
                         value={signUpPassword}
                         onChange={(e) => setSignUpPassword(e.target.value)}
                         placeholder="Create password"
-                        className="pl-10 pr-10 h-12 text-sm rounded-xl bg-[#f4faf7] border-[#d1fae5] dark:bg-slate-900/60 dark:border-slate-700 text-foreground placeholder:text-muted-foreground/70 focus-visible:ring-blue-500"
+                        className="pl-9 pr-9 h-10 sm:h-11 text-xs sm:text-sm rounded-xl bg-sky-50/30 hover:bg-white focus:bg-white border-sky-200 hover:border-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/15 text-slate-900 placeholder:text-slate-400 shadow-2xs transition-all"
                         autoComplete="new-password"
                         required
                       />
                       <button
                         type="button"
+                        suppressHydrationWarning
                         onClick={() => setSignUpShowPassword((s) => !s)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-blue-600 hover:text-blue-700 cursor-pointer"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-sky-600 cursor-pointer transition-colors p-1"
                       >
                         {signUpShowPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -1377,15 +1368,15 @@ function AuthPage() {
                   </div>
 
                   {error && (
-                    <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive font-medium">
+                    <div className="rounded-xl border border-red-200 bg-red-50/90 p-2.5 text-xs text-red-700 font-medium">
                       {error}
-                    </p>
+                    </div>
                   )}
 
                   <Button
                     type="submit"
-                    size="lg"
-                    className="w-full h-12 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-600/25 cursor-pointer text-sm"
+                    size="default"
+                    className="w-full h-10 sm:h-11 rounded-xl font-bold bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:via-sky-700 hover:to-blue-700 text-white shadow-md shadow-sky-500/20 hover:shadow-sky-500/30 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all"
                     disabled={signUpLoading}
                   >
                     {signUpLoading ? (
@@ -1397,14 +1388,15 @@ function AuthPage() {
                   </Button>
                 </form>
 
-                <div className="mt-4 text-center">
+                <div className="mt-3.5 text-center">
                   <button
                     type="button"
+                    suppressHydrationWarning
                     onClick={() => {
                       setTab("signin");
                       setError(null);
                     }}
-                    className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+                    className="text-xs text-sky-600 dark:text-sky-400 font-bold hover:underline cursor-pointer"
                   >
                     Already have an account? Sign In →
                   </button>
@@ -1412,36 +1404,37 @@ function AuthPage() {
               </div>
             ) : (
               /* Step 2: 6-Digit Mobile OTP Verification Screen */
-              <div className="space-y-4 animate-fade-up">
+              <div className="space-y-3.5 animate-fade-up">
                 <button
                   type="button"
+                  suppressHydrationWarning
                   onClick={() => {
                     setSignUpStep("form");
                     setError(null);
                   }}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 cursor-pointer"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" /> Back to Change Number
                 </button>
 
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <h1 className="font-display text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
-                      <Smartphone className="h-6 w-6 text-primary" />
+                    <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <Smartphone className="h-5 w-5 text-sky-600" />
                       Verify Mobile OTP
                     </h1>
-                    <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                    <span className="rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[10px] font-bold text-amber-700">
                       ⏱️ Valid 5 Mins
                     </span>
                   </div>
-                  <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                  <p className="mt-1 text-xs text-slate-500">
                     Enter the 6-digit security code sent to <strong>+91 {signUpPhone}</strong>.
                   </p>
                 </div>
 
-                <form onSubmit={handleVerifyOtpAndRegister} className="space-y-4">
-                  <div className="flex flex-col items-center justify-center space-y-2 py-1">
-                    <Label htmlFor="otp-input" className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                <form onSubmit={handleVerifyOtpAndRegister} className="space-y-3.5">
+                  <div className="flex flex-col items-center justify-center space-y-1.5 py-1">
+                    <Label htmlFor="otp-input" className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
                       Enter 6-Digit Code
                     </Label>
                     <InputOTP
@@ -1454,27 +1447,27 @@ function AuthPage() {
                         }
                       }}
                     >
-                      <InputOTPGroup className="gap-1.5 sm:gap-2">
-                        <InputOTPSlot index={0} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
-                        <InputOTPSlot index={1} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
-                        <InputOTPSlot index={2} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
-                        <InputOTPSlot index={3} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
-                        <InputOTPSlot index={4} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
-                        <InputOTPSlot index={5} className="h-11 w-11 sm:h-12 sm:w-12 text-lg font-bold rounded-xl" />
+                      <InputOTPGroup className="gap-1 sm:gap-2">
+                        <InputOTPSlot index={0} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
+                        <InputOTPSlot index={1} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
+                        <InputOTPSlot index={2} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
+                        <InputOTPSlot index={3} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
+                        <InputOTPSlot index={4} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
+                        <InputOTPSlot index={5} className="h-10 w-10 sm:h-11 sm:w-11 text-base sm:text-lg font-bold rounded-xl border-sky-200 bg-sky-50/50 text-slate-900 focus:border-sky-500" />
                       </InputOTPGroup>
                     </InputOTP>
                   </div>
 
                   {error && (
-                    <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs text-destructive text-center font-medium">
+                    <div className="rounded-xl border border-red-200 bg-red-50/90 p-2.5 text-xs text-red-700 text-center font-medium">
                       {error}
-                    </p>
+                    </div>
                   )}
 
                   <Button
                     type="submit"
-                    size="lg"
-                    className="w-full h-12 rounded-xl font-bold shadow-md bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer text-sm"
+                    size="default"
+                    className="w-full h-10 sm:h-11 rounded-xl font-bold bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-600 hover:via-blue-700 hover:to-indigo-700 text-white shadow-md shadow-sky-500/20 cursor-pointer text-xs sm:text-sm"
                     disabled={signUpLoading || otpCode.length !== 6}
                   >
                     {signUpLoading ? (
@@ -1482,47 +1475,50 @@ function AuthPage() {
                     ) : (
                       <CheckCircle2 className="mr-2 h-4 w-4" />
                     )}
-                    Verify & Create Account
+                    Complete Registration & Login
                   </Button>
-
-                  <div className="flex items-center justify-end pt-1 text-xs">
-                    <button
-                      type="button"
-                      disabled={resendTimer > 0 || signUpLoading}
-                      onClick={handleSendOtp}
-                      className="flex items-center gap-1 font-bold text-primary hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer"
-                    >
-                      <RotateCcw className="h-3 w-3" />
-                      {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : "Resend OTP"}
-                    </button>
-                  </div>
                 </form>
+
+                <div className="flex items-center justify-between pt-0.5 text-xs text-slate-500">
+                  <span>Didn't receive code?</span>
+                  <button
+                    type="button"
+                    suppressHydrationWarning
+                    disabled={resendTimer > 0 || signUpLoading}
+                    onClick={handleSendOtp}
+                    className="flex items-center gap-1 font-bold text-sky-600 hover:underline disabled:opacity-50 disabled:no-underline cursor-pointer text-xs"
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                    {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend OTP"}
+                  </button>
+                </div>
               </div>
             )}
-
           </div>
+        </div>
 
-          <p className="mt-3 text-center text-xs text-muted-foreground font-medium select-none">
+        {/* Global Bottom Security & Copyright Stamp */}
+        <div className="mt-6 sm:mt-8 text-center text-xs text-slate-400 space-y-1.5">
+          <p className="flex items-center justify-center gap-1.5 text-[10.5px] sm:text-[11px] font-medium text-slate-500">
+            <Lock className="h-3 w-3 text-blue-600" />
             Secured with end-to-end encryption
           </p>
-
-          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <Link to="/" className="hover:text-primary hover:underline">Home</Link>
-            <span>·</span>
-            <a href="/#how-it-works" className="hover:text-primary hover:underline">How It Works</a>
-            <span>·</span>
+          <div className="flex items-center justify-center gap-3 text-[10.5px] sm:text-[11px] text-slate-500">
+            <Link to="/" className="hover:text-blue-600 transition-colors">
+              Home
+            </Link>
+            <span>•</span>
+            <a href="/#how-it-works" className="hover:text-blue-600 transition-colors">
+              How It Works
+            </a>
+            <span>•</span>
             <span>Mehar Advisory © {new Date().getFullYear()}</span>
           </div>
-
+          <p className="text-[9.5px] sm:text-[10px] text-slate-400">
+            Protected by Mehar DVR GPS Anti-Spoof System
+          </p>
         </div>
-
-        {/* Empty bottom spacer for symmetrical centering */}
-        <div className="hidden lg:block text-center text-xs text-muted-foreground">
-          Protected by Mehar DVR GPS Anti-Spoof System
-        </div>
-
       </div>
-
     </div>
   );
 }

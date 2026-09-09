@@ -61,6 +61,7 @@ import {
   getMyVisits,
   getOfficeOptions,
   getSessionInfo,
+  formatEmployeePrefix,
   searchPlaces,
   type PlaceSearchResult,
 } from "@/lib/dvr.functions";
@@ -203,17 +204,17 @@ function StatCard({
   }[variant];
 
   return (
-    <div className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-border/80 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40 min-h-[136px]">
-      <div className={`absolute left-0 top-0 h-1.5 w-full bg-gradient-to-r ${styles.top}`} />
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border shadow-sm transition-transform group-hover:scale-110 ${styles.bg}`}>
-          <Icon className="h-5 w-5" />
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-sky-100/90 bg-white p-3 sm:p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-sky-300 min-h-[96px] sm:min-h-[120px]">
+      <div className={`absolute left-0 top-0 h-1 w-full bg-gradient-to-r ${styles.top}`} />
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[8px] xs:text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 leading-tight truncate">{label}</span>
+        <div className={`flex h-7 w-7 sm:h-8.5 sm:w-8.5 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform group-hover:scale-105 ${styles.bg}`}>
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </div>
       </div>
-      <div className="mt-3">
-        <p className="font-display text-3xl font-black tracking-tight text-foreground">{value}</p>
-        <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{hint}</p>
+      <div className="mt-1.5 sm:mt-2">
+        <p className="font-display text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-none">{value}</p>
+        <p className="mt-0.5 text-[9px] sm:text-[11px] text-slate-500 truncate leading-tight">{hint}</p>
       </div>
     </div>
   );
@@ -263,16 +264,41 @@ function getCleanDisplayName(rawName?: string | null): string {
   const candidate = (rawName || "").trim();
   if (candidate && candidate !== "Employee" && candidate !== "Mehar User") {
     if (!candidate.includes("@")) {
-      return candidate;
+      return candidate.replace(/\b\w/g, (c) => c.toUpperCase());
     }
   }
   return candidate || "Employee";
 }
 
-function getCleanEmployeeId(rawId?: string | null, _name?: string | null): string {
+function getUserInitials(name?: string | null): string {
+  if (!name) return "SS";
+  const clean = name.replace(/[^a-zA-Z\s]/g, "").trim();
+  const parts = clean.split(/\s+/).filter(Boolean);
+  const first = parts[0] || "";
+  const last = parts[parts.length - 1] || "";
+
+  if (parts.length >= 2 && first.length > 0 && last.length > 0) {
+    const f0 = first.charAt(0) || "";
+    const l0 = last.charAt(0) || "";
+    return `${f0}${l0}`.toUpperCase();
+  }
+  if (first.length >= 2) {
+    return first.slice(0, 2).toUpperCase();
+  }
+  if (first.length === 1) {
+    return first.toUpperCase();
+  }
+  return "SS";
+}
+
+function getCleanEmployeeId(rawId?: string | null, rawName?: string | null): string {
   const id = (rawId || "").trim().toUpperCase();
-  if (id) return id;
-  return "MEH101";
+  if (id && id !== "UNDEFINED" && id !== "NULL" && id !== "NONE" && id !== "MEH000") return id;
+  if (rawName && rawName !== "Employee" && rawName !== "Mehar User") {
+    const prefix = formatEmployeePrefix(rawName);
+    return `${prefix}030`;
+  }
+  return "MEHSUM030";
 }
 
 function EmployeeDashboard({
@@ -413,42 +439,71 @@ function EmployeeDashboard({
 
   return (
     <div className="space-y-6">
-      {/* Executive Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-primary/5 p-6 sm:p-7 shadow-xs animate-fade-up">
-        {/* Subtle background glow effect */}
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="space-y-0.5">
-              <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                Hi, <span className="text-blue-600 font-bold">{name}</span>
-              </h1>
-              <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
-                {employeeId ? `Employee · ${employeeId}` : "Employee"}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            {((visits ?? []).length > 0 || myPendingOffices.length > 0) && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-11 rounded-xl text-destructive border-destructive/30 hover:bg-destructive/10 text-xs font-semibold px-3"
-                onClick={() => setShowClearConfirm(true)}
-              >
-                <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Remove Entries
-              </Button>
-            )}
-            <Link
-              to="/visit"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-lift transition-all hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <Camera className="h-4.5 w-4.5" /> Start Field Visit
-            </Link>
-          </div>
+      {/* Employee Top Header Bar (Single Horizontal Line across Mobile, Tablet, Desktop) */}
+      <div className="flex flex-row items-center justify-between gap-1.5 sm:gap-4 rounded-2xl border border-slate-100 bg-white/95 px-3 sm:px-5 py-2 sm:py-2.5 shadow-sm backdrop-blur-md animate-fade-up">
+        {/* Left: Hi, Name / Field Employee */}
+        <div className="min-w-0 flex-1 pr-1">
+          <h1 className="font-display text-xs sm:text-base font-extrabold tracking-tight text-slate-900 truncate leading-tight">
+            Hi, <span className="text-blue-600 font-black">{name}</span>
+          </h1>
+          <p className="text-[10px] sm:text-xs font-semibold text-blue-600 tracking-tight leading-tight mt-0.5">
+            Field Employee
+          </p>
         </div>
+
+        {/* Right: UNIQUE ID Pill + Notification Bell + Avatar in one clean horizontal row */}
+        <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
+          {/* Emerald UNIQUE ID Pill */}
+          <div className="flex flex-col items-center justify-center rounded-full bg-[#00c58e] hover:bg-[#00b07e] transition-colors text-white px-2 sm:px-3.5 py-0.5 sm:py-1 shadow-xs select-none">
+            <span className="text-[5.5px] sm:text-[7.5px] font-black uppercase tracking-wider text-white/90 leading-none">
+              UNIQUE ID
+            </span>
+            <span className="text-[9.5px] sm:text-xs font-black font-mono tracking-tight text-white leading-tight mt-0.5">
+              {employeeId}
+            </span>
+          </div>
+
+          {/* Notification Bell */}
+          <AdminNotificationCenter />
+
+          {/* User Profile Avatar */}
+          <Link to="/profile" className="shrink-0 group" title="View Profile">
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt="Profile avatar"
+                className="h-7 w-7 sm:h-8.5 sm:w-8.5 rounded-full object-cover ring-2 ring-emerald-500/30 group-hover:ring-blue-500 transition-all shadow-xs"
+              />
+            ) : (
+              <div className="flex h-7 w-7 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 font-black text-white text-[9.5px] sm:text-xs shadow-xs ring-2 ring-emerald-500/30">
+                {getUserInitials(name)}
+              </div>
+            )}
+          </Link>
+        </div>
+      </div>
+
+      {/* Quick Action Navigation / CTA for Employee */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2">
+          {((visits ?? []).length > 0 || myPendingOffices.length > 0) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8.5 rounded-xl text-rose-600 border-rose-200/80 hover:bg-rose-50 text-[11px] font-bold px-2.5 shadow-2xs"
+              onClick={() => setShowClearConfirm(true)}
+            >
+              <Trash2 className="mr-1 h-3.5 w-3.5" /> Remove Entries
+            </Button>
+          )}
+        </div>
+        <Link
+          to="/visit"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 px-3.5 sm:px-4 py-2 text-xs font-bold text-white shadow-sm shadow-sky-500/25 transition-all active:scale-[0.98]"
+        >
+          <Camera className="h-4 w-4 shrink-0" />
+          <span className="whitespace-nowrap">Start Field Visit</span>
+        </Link>
       </div>
 
       {/* Confirmation Dialog for Clearing Entries */}
@@ -612,36 +667,36 @@ function EmployeeDashboard({
 
       {/* Pending Location Requests Submitted by Employee */}
       {myPendingOffices.length > 0 && (
-        <section className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-5 shadow-soft animate-fade-up">
-          <div className="flex items-center justify-between gap-2 mb-3">
+        <section className="rounded-2xl border border-amber-200 bg-amber-50/50 p-3.5 sm:p-5 shadow-xs backdrop-blur-md animate-fade-up space-y-3">
+          <div className="flex items-center justify-between gap-2">
             <div>
-              <h2 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                My Office Requests ({myPendingOffices.length})
+              <h2 className="font-display text-xs sm:text-sm font-extrabold text-amber-900 flex items-center gap-1.5">
+                <MapPin className="h-4 w-4 text-amber-600" />
+                <span>My Office Requests ({myPendingOffices.length})</span>
               </h2>
-              <p className="text-xs text-muted-foreground">
-                Offices awaiting Admin approval to permanently fix the location under 100m radius.
+              <p className="text-[10.5px] sm:text-xs text-slate-500 mt-0.5">
+                Offices awaiting Admin approval to permanently fix the 100m radius geofence.
               </p>
             </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-2.5 sm:grid-cols-2">
             {myPendingOffices.map((loc: any) => (
               <div
                 key={loc.id}
-                className="rounded-xl border border-border bg-card p-3.5 space-y-1.5"
+                className="rounded-2xl border border-slate-100 bg-white/95 p-3 sm:p-3.5 shadow-xs space-y-1.5 transition hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <p className="font-semibold text-sm text-foreground">
+                  <p className="font-bold text-xs sm:text-sm text-slate-900 leading-tight">
                     {loc.company_name ? `${loc.company_name} — ${loc.location_name}` : loc.location_name}
                   </p>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-semibold text-amber-600">
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span className="rounded-lg bg-amber-50 border border-amber-200/80 px-2 py-0.5 text-[9.5px] sm:text-[10px] font-bold text-amber-800">
                       Awaiting Approval
                     </span>
                     <button
                       type="button"
                       title="Cancel office request"
-                      className="p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition"
+                      className="p-1 text-slate-400 hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       onClick={() =>
                         setCancelRequestTarget({
                           id: loc.id,
@@ -654,17 +709,18 @@ function EmployeeDashboard({
                   </div>
                 </div>
                 {loc.owner_name && (
-                  <p className="text-xs text-muted-foreground">
-                    Owner: {loc.owner_name} {loc.owner_number && `(${loc.owner_number})`}
+                  <p className="text-[11px] text-slate-600">
+                    Owner: <strong className="text-slate-800">{loc.owner_name}</strong> {loc.owner_number && `(${loc.owner_number})`}
                   </p>
                 )}
                 {loc.company_description && (
-                  <p className="text-xs text-muted-foreground line-clamp-1">
+                  <p className="text-[10.5px] text-slate-500 line-clamp-2 bg-slate-50 p-1.5 rounded-lg border border-slate-100">
                     {loc.company_description}
                   </p>
                 )}
-                <p className="text-[11px] text-muted-foreground font-mono">
-                  GPS: {loc.latitude.toFixed(5)}, {loc.longitude.toFixed(5)}
+                <p className="text-[10px] sm:text-[10.5px] text-slate-500 font-mono flex items-center gap-1">
+                  <span>📍 GPS:</span>
+                  <span className="font-semibold text-slate-700">{loc.latitude.toFixed(5)}, {loc.longitude.toFixed(5)}</span>
                 </p>
               </div>
             ))}
@@ -673,24 +729,24 @@ function EmployeeDashboard({
       )}
 
       {/* Main Content 2-Column Grid */}
-      <div className="grid gap-6 lg:grid-cols-12">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-12">
         {/* Left Column: Field Launchpad & Recent Activity (7 cols) */}
-        <div className="space-y-6 lg:col-span-7">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-7">
           {/* Daily Field Coverage & Action Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-border/90 bg-card p-5 shadow-xs">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-100 bg-white/95 p-4 sm:p-5 shadow-xs backdrop-blur-md">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2">
-                  <span className="flex h-2 w-2 rounded-full bg-primary" />
-                  <h2 className="font-display text-sm font-bold tracking-tight text-foreground uppercase">
+                <div className="flex items-center gap-1.5">
+                  <span className="flex h-2 w-2 rounded-full bg-sky-500" />
+                  <h2 className="font-display text-xs sm:text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                     Daily Route Coverage
                   </h2>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-[11px] sm:text-xs text-slate-500">
                   {totalAssigned > 0 ? (
                     <>
-                      Visited <strong className="text-foreground">{completedTodayLocations}</strong> of{" "}
-                      <strong className="text-foreground">{totalAssigned}</strong> assigned offices today ({coveragePercent}%)
+                      Visited <strong className="text-slate-900">{completedTodayLocations}</strong> of{" "}
+                      <strong className="text-slate-900">{totalAssigned}</strong> assigned offices today ({coveragePercent}%)
                     </>
                   ) : (
                     "No office locations currently assigned to your profile."
@@ -699,18 +755,18 @@ function EmployeeDashboard({
               </div>
               <Link
                 to="/visit"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:bg-primary/90 transition-all shrink-0"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 px-3 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-white shadow-xs transition-all shrink-0"
               >
                 <Camera className="h-3.5 w-3.5" />
-                Check In Now
+                <span>Check In Now</span>
               </Link>
             </div>
 
             {/* Progress bar */}
-            <div className="mt-3.5">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted/80">
+            <div className="mt-3">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-sky-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600 transition-all duration-500"
                   style={{ width: `${coveragePercent}%` }}
                 />
               </div>
@@ -718,70 +774,40 @@ function EmployeeDashboard({
           </div>
 
           {/* Recent Visits Section */}
-          <section className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs">
-            <div className="mb-4 flex items-center justify-between">
+          <section className="rounded-2xl border border-slate-100 bg-white/95 p-4 sm:p-5 shadow-xs backdrop-blur-md">
+            <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="font-display text-base font-bold text-foreground">Recent Visits</h2>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-mono font-bold text-primary">
+                <h2 className="font-display text-xs sm:text-sm md:text-base font-extrabold text-slate-900">Recent Visits</h2>
+                <span className="rounded-full bg-sky-50 border border-sky-200/80 px-2 py-0.5 text-[10px] font-mono font-bold text-sky-700">
                   {(visits ?? []).length}
                 </span>
               </div>
               <Link
                 to="/history"
-                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-bold text-sky-600 hover:text-sky-700"
               >
                 View all history <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {(visits ?? []).slice(0, 4).map((v) => (
                 <div
                   key={v.id}
-                  className="group flex items-center gap-3.5 rounded-xl border border-border/70 p-3 transition-all hover:border-primary/30 hover:bg-accent/40"
+                  className="group relative rounded-2xl border border-slate-100 bg-white/95 p-3 shadow-xs backdrop-blur-md transition hover:border-sky-200 hover:shadow-sm"
                 >
-                  <Link
-                    to="/visits/$visitId"
-                    params={{ visitId: v.id }}
-                    className="flex items-center gap-3.5 min-w-0 flex-1"
-                  >
-                    <VisitPhoto
-                      src={v.photo_url}
-                      alt={v.location?.location_name ?? "Visit"}
-                      className="h-14 w-14 shrink-0 rounded-xl object-cover ring-1 ring-border"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="truncate text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {v.location?.company_name
-                            ? `${v.location.company_name} — ${v.location.location_name}`
-                            : (v.location?.location_name ?? "Office Visit")}
-                        </p>
-                        {employeeId && (
-                          <span className="rounded bg-muted px-1.5 py-0.5 text-[9px] font-mono font-semibold text-muted-foreground shrink-0">
-                            {employeeId}
-                          </span>
-                        )}
-                      </div>
-                      <p className="truncate text-xs text-muted-foreground mt-0.5">
-                        Purpose: <span className="font-medium text-foreground">{v.visit_purpose}</span>
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5">
-                        <span>{v.visit_date}</span>
-                        <span>·</span>
-                        <span>{v.visit_time.slice(0, 5)}</span>
-                        <span>·</span>
-                        <span className="font-mono text-primary font-medium">{formatDistance(v.distance)}</span>
-                      </p>
+                  {/* Top status bar in card */}
+                  <div className="flex items-center justify-between gap-2 pb-1.5 mb-1.5 border-b border-slate-100">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <StatusPill status={v.status} />
+                      <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500">
+                        {v.visit_date} • {v.visit_time.slice(0, 5)}
+                      </span>
                     </div>
-                  </Link>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <StatusPill status={v.status} />
                     <button
                       type="button"
                       title="Delete incorrect visit"
-                      className="p-1.5 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
+                      className="p-1 text-slate-400 hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       onClick={(e) => {
                         e.stopPropagation();
                         setDeleteVisitTarget({
@@ -793,23 +819,57 @@ function EmployeeDashboard({
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
+
+                  <Link
+                    to="/visits/$visitId"
+                    params={{ visitId: v.id }}
+                    className="flex items-start gap-3 min-w-0"
+                  >
+                    <VisitPhoto
+                      src={v.photo_url}
+                      alt={v.location?.location_name ?? "Visit"}
+                      className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl object-cover ring-1 ring-slate-200 shadow-2xs"
+                    />
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-bold text-slate-900 text-xs sm:text-sm leading-snug group-hover:text-sky-600 transition-colors line-clamp-2">
+                          {v.location?.company_name
+                            ? `${v.location.company_name} — ${v.location.location_name}`
+                            : (v.location?.location_name ?? "Office Visit")}
+                        </p>
+                        {employeeId && (
+                          <span className="rounded bg-sky-50 border border-sky-200/80 px-1.5 py-0.2 text-[9.5px] font-mono font-bold text-sky-700">
+                            {employeeId}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-600">
+                        Purpose: <strong className="text-slate-800">{v.visit_purpose}</strong>
+                      </p>
+                      <p className="text-[10.5px] sm:text-[11px] text-slate-500 flex items-center gap-1">
+                        <span>📍</span>
+                        <span className="font-semibold text-slate-700">{formatDistance(v.distance)}</span>
+                        <span>from office</span>
+                      </p>
+                    </div>
+                  </Link>
                 </div>
               ))}
 
               {(visits ?? []).length === 0 && (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/80 p-8 text-center bg-muted/10">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-3">
-                    <Camera className="h-6 w-6" />
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 p-6 text-center bg-slate-50/50">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sky-600 mb-2">
+                    <Camera className="h-5 w-5" />
                   </div>
-                  <p className="text-sm font-bold text-foreground">No visits logged today yet</p>
-                  <p className="mt-1 max-w-sm text-xs text-muted-foreground">
-                    When you arrive at an assigned client office, tap the button below to take a live GPS photo.
+                  <p className="text-xs sm:text-sm font-bold text-slate-900">No visits logged today yet</p>
+                  <p className="mt-0.5 max-w-sm text-[11px] text-slate-500">
+                    When you arrive at an assigned client office, click below to take a live GPS photo.
                   </p>
                   <Link
                     to="/visit"
-                    className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:bg-primary/90"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-xs"
                   >
-                    <Camera className="h-3.5 w-3.5" /> Start First Field Visit
+                    <Camera className="h-3.5 w-3.5" /> Start Field Visit
                   </Link>
                 </div>
               )}
@@ -818,49 +878,49 @@ function EmployeeDashboard({
         </div>
 
         {/* Right Column: Assigned Locations & Compliance Guidelines (5 cols) */}
-        <div className="space-y-6 lg:col-span-5">
+        <div className="space-y-4 sm:space-y-6 lg:col-span-5">
           {/* Assigned Locations Hub */}
-          <section className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs">
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="font-display text-base font-bold text-foreground">Assigned Locations</h2>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-mono font-bold text-muted-foreground">
+          <section className="rounded-2xl border border-slate-100 bg-white/95 p-4 sm:p-5 shadow-xs backdrop-blur-md">
+            <div className="flex items-center justify-between mb-0.5">
+              <h2 className="font-display text-xs sm:text-sm md:text-base font-extrabold text-slate-900">Assigned Locations</h2>
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-mono font-bold text-slate-600">
                 {totalAssigned}
               </span>
             </div>
-            <p className="mb-4 text-xs text-muted-foreground">
+            <p className="mb-3 text-[11px] sm:text-xs text-slate-500">
               Official geofenced locations assigned to your profile.
             </p>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {assignedLocations.map((l) => {
                 const done = visitedTodayIds.has(l.id);
                 return (
                   <div
                     key={l.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border/70 p-3 bg-card hover:border-primary/30 transition-colors"
+                    className="flex items-center justify-between gap-2.5 rounded-xl border border-slate-100 p-2.5 bg-slate-50/50 hover:bg-slate-50 transition-colors"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-foreground">
+                      <p className="truncate text-xs font-bold text-slate-900">
                         {l.company_name ? `${l.company_name} — ${l.location_name}` : l.location_name}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
-                        <span className="font-mono text-[11px]">{l.location_code}</span>
+                      <p className="text-[10.5px] text-slate-500 mt-0.5 flex items-center gap-1.5">
+                        <span className="font-mono text-[10px]">{l.location_code}</span>
                         <span>·</span>
-                        <span className="inline-flex items-center gap-1 font-mono text-[11px] text-primary">
-                          <Crosshair className="h-3 w-3" /> {l.allowed_radius}m radius
+                        <span className="inline-flex items-center gap-0.5 font-mono text-[10px] text-sky-700 font-semibold">
+                          <Crosshair className="h-2.5 w-2.5" /> {l.allowed_radius}m radius
                         </span>
                       </p>
                     </div>
 
-                    <div className="shrink-0 flex items-center gap-2">
+                    <div className="shrink-0 flex items-center gap-1.5">
                       {done ? (
-                        <span className="rounded-full bg-success/15 border border-success/30 px-2.5 py-1 text-[10px] font-bold text-success">
+                        <span className="rounded-full bg-emerald-100 border border-emerald-300/80 px-2 py-0.5 text-[9.5px] font-bold text-emerald-800">
                           Visited ✓
                         </span>
                       ) : (
                         <Link
                           to="/visit"
-                          className="inline-flex items-center gap-1 rounded-lg bg-primary/10 border border-primary/20 px-2.5 py-1 text-[10px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+                          className="inline-flex items-center gap-1 rounded-lg bg-sky-50 border border-sky-200/80 px-2 py-0.5 text-[10px] font-bold text-sky-700 hover:bg-sky-100 transition-all"
                         >
                           Check In <ArrowRight className="h-2.5 w-2.5" />
                         </Link>
@@ -871,39 +931,39 @@ function EmployeeDashboard({
               })}
 
               {assignedLocations.length === 0 && (
-                <p className="py-6 text-center text-sm text-muted-foreground">
+                <div className="py-5 text-center text-xs text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
                   No locations assigned yet — please contact your admin.
-                </p>
+                </div>
               )}
             </div>
           </section>
 
           {/* DVR Field Compliance Card */}
-          <section className="rounded-2xl border border-border/80 bg-gradient-to-br from-card to-muted/30 p-5 shadow-xs">
-            <div className="flex items-center gap-2 mb-3">
-              <ShieldCheck className="h-4.5 w-4.5 text-primary" />
-              <h3 className="font-display text-sm font-bold text-foreground">Field DVR Verification Rules</h3>
+          <section className="rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50/80 to-sky-50/40 p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <ShieldCheck className="h-4 w-4 text-sky-600" />
+              <h3 className="font-display text-xs sm:text-sm font-extrabold text-slate-900">Field DVR Verification Rules</h3>
             </div>
-            <div className="space-y-2.5 text-xs text-muted-foreground">
-              <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-card/60 p-2.5">
-                <Crosshair className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <div className="space-y-2 text-xs">
+              <div className="flex items-start gap-2 rounded-xl border border-slate-100 bg-white/90 p-2.5 shadow-2xs">
+                <Crosshair className="h-3.5 w-3.5 text-sky-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-foreground">100m GPS Geofence</p>
-                  <p className="text-[11px] text-muted-foreground">You must stand within 100 meters of the office location point to submit proof.</p>
+                  <p className="font-bold text-slate-800 text-[11px] sm:text-xs">100m GPS Geofence</p>
+                  <p className="text-[10px] sm:text-[10.5px] text-slate-500">You must stand within 100 meters of the office location point to submit proof.</p>
                 </div>
               </div>
-              <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-card/60 p-2.5">
-                <Camera className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 rounded-xl border border-slate-100 bg-white/90 p-2.5 shadow-2xs">
+                <Camera className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-foreground">Live Camera Only</p>
-                  <p className="text-[11px] text-muted-foreground">Gallery photos are disabled. Photos must be taken live on-site through the camera.</p>
+                  <p className="font-bold text-slate-800 text-[11px] sm:text-xs">Live Camera Only</p>
+                  <p className="text-[10px] sm:text-[10.5px] text-slate-500">Gallery photos are disabled. Photos must be taken live on-site through the camera.</p>
                 </div>
               </div>
-              <div className="flex items-start gap-2.5 rounded-xl border border-border/60 bg-card/60 p-2.5">
-                <BadgeCheck className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 rounded-xl border border-slate-100 bg-white/90 p-2.5 shadow-2xs">
+                <BadgeCheck className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-foreground">Automatic Watermarking</p>
-                  <p className="text-[11px] text-muted-foreground">Timestamp, employee ID, coordinates & office name are irreversibly stamped onto the photo.</p>
+                  <p className="font-bold text-slate-800 text-[11px] sm:text-xs">Automatic Watermarking</p>
+                  <p className="text-[10px] sm:text-[10.5px] text-slate-500">Timestamp, employee ID, coordinates & office name are irreversibly stamped onto the photo.</p>
                 </div>
               </div>
             </div>
@@ -1320,26 +1380,26 @@ function AdminDashboard({
 
   return (
     <div className="space-y-6">
-      {/* Super Admin Top Header Bar (Exact UI from screenshot) */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card px-6 py-4 shadow-sm backdrop-blur-md animate-fade-up">
+      {/* Super Admin Top Header Bar (Single Horizontal Line across Mobile, Tablet, Desktop) */}
+      <div className="flex flex-row items-center justify-between gap-1.5 sm:gap-4 rounded-2xl border border-slate-100 bg-white/95 px-3 sm:px-5 py-2 sm:py-2.5 shadow-sm backdrop-blur-md animate-fade-up">
         {/* Left: Hi, Yogendra / Super Admin */}
-        <div className="space-y-0.5">
-          <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-            Hi, <span className="text-blue-600 dark:text-blue-400 font-extrabold">{profile?.name ? profile.name.replace(/ \(Admin\)/i, "") : "Yogendra"}</span>
+        <div className="min-w-0 flex-1 pr-1">
+          <h1 className="font-display text-xs sm:text-base font-extrabold tracking-tight text-slate-900 truncate leading-tight">
+            Hi, <span className="text-blue-600 font-black">{profile?.name ? profile.name.replace(/ \(Admin\)/i, "").replace(/\b\w/g, (c: string) => c.toUpperCase()) : "Yogendra"}</span>
           </h1>
-          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 tracking-tight">
+          <p className="text-[10px] sm:text-xs font-semibold text-blue-600 tracking-tight leading-tight mt-0.5">
             Super Admin
           </p>
         </div>
 
-        {/* Right: UNIQUE ID Pill + Notification Bell + Avatar */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        {/* Right: UNIQUE ID Pill + Notification Bell + Avatar in one clean horizontal row */}
+        <div className="flex items-center gap-1 sm:gap-2.5 shrink-0">
           {/* Emerald UNIQUE ID Pill */}
-          <div className="flex flex-col items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-600 transition-colors text-white px-3.5 sm:px-4 py-1 shadow-sm select-none">
-            <span className="text-[7.5px] sm:text-[8px] font-black uppercase tracking-wider text-emerald-100/90 leading-none">
+          <div className="flex flex-col items-center justify-center rounded-full bg-[#00c58e] hover:bg-[#00b07e] transition-colors text-white px-2 sm:px-3.5 py-0.5 sm:py-1 shadow-xs select-none">
+            <span className="text-[5.5px] sm:text-[7.5px] font-black uppercase tracking-wider text-white/90 leading-none">
               UNIQUE ID
             </span>
-            <span className="text-xs sm:text-sm font-black font-mono tracking-tight text-white leading-tight">
+            <span className="text-[9.5px] sm:text-xs font-black font-mono tracking-tight text-white leading-tight mt-0.5">
               {(profile?.employee_id && profile.employee_id !== "MEH000") ? profile.employee_id : "MEH-ADM-001"}
             </span>
           </div>
@@ -1353,50 +1413,63 @@ function AdminDashboard({
               <img
                 src={profile.avatar_url}
                 alt="Profile avatar"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover ring-2 ring-emerald-500/40 group-hover:ring-primary transition-all shadow-xs"
+                className="h-7 w-7 sm:h-8.5 sm:w-8.5 rounded-full object-cover ring-2 ring-emerald-500/30 group-hover:ring-blue-500 transition-all shadow-xs"
               />
             ) : (
-              <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 font-bold text-white text-xs sm:text-sm ring-2 ring-emerald-500/40 shadow-xs">
-                {profile?.name ? profile.name.charAt(0).toUpperCase() : "Y"}
+              <div className="flex h-7 w-7 sm:h-8.5 sm:w-8.5 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 font-black text-white text-[9.5px] sm:text-xs shadow-xs ring-2 ring-emerald-500/30">
+                {getUserInitials(profile?.name || "Yogendra")}
               </div>
             )}
           </Link>
         </div>
       </div>
 
-      {/* Quick Action Navigation Chips */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <Button
-          onClick={() => {
-            setOfficeFormError(null);
-            const fresh = { ...emptyOfficeForm };
-            setOfficeForm(fresh);
-            fetchDeviceGps(fresh);
-          }}
-          className="font-semibold shadow-md shadow-primary/20 text-xs h-9 gap-1.5"
-        >
-          <Plus className="h-4 w-4" /> Add Office
-        </Button>
-        <Button asChild variant="outline" className="font-semibold text-xs h-9 gap-1.5 shadow-xs">
-          <Link to="/admin/employees">
-            <Users className="h-3.5 w-3.5 text-primary" /> Users
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="font-semibold text-xs h-9 gap-1.5 shadow-xs">
-          <Link to="/admin/locations">
-            <MapPin className="h-3.5 w-3.5 text-primary" /> Locations ({activeLocations})
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="font-semibold text-xs h-9 gap-1.5 shadow-xs">
-          <Link to="/admin/visits">
-            <ClipboardList className="h-3.5 w-3.5 text-primary" /> Reports
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="font-semibold text-xs h-9 gap-1.5 shadow-xs">
-          <Link to="/admin/map">
-            <Navigation className="h-3.5 w-3.5 text-primary" /> Live Map
-          </Link>
-        </Button>
+      {/* Quick Action Navigation - 3-button & 2-button horizontal pairs on Mobile, single row on Desktop */}
+      <div className="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-2.5">
+        {/* Row 1 on mobile (3 buttons pair across horizontal line) */}
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2 sm:contents">
+          <Button
+            onClick={() => {
+              setOfficeFormError(null);
+              const fresh = { ...emptyOfficeForm };
+              setOfficeForm(fresh);
+              fetchDeviceGps(fresh);
+            }}
+            className="w-full sm:w-auto font-extrabold text-[11px] sm:text-xs h-9 px-1.5 sm:px-4 gap-1 sm:gap-1.5 rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white shadow-sm shadow-sky-500/20 cursor-pointer justify-center"
+          >
+            <Plus className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate hidden xs:inline sm:inline">Add Office</span>
+            <span className="truncate inline xs:hidden sm:hidden">Office</span>
+          </Button>
+          <Button asChild variant="outline" className="w-full sm:w-auto font-extrabold text-[11px] sm:text-xs h-9 px-1.5 sm:px-4 gap-1 sm:gap-1.5 rounded-2xl border-sky-100 bg-white/95 text-slate-700 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 shadow-2xs cursor-pointer justify-center">
+            <Link to="/admin/employees">
+              <Users className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+              <span className="truncate">Users</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full sm:w-auto font-extrabold text-[11px] sm:text-xs h-9 px-1.5 sm:px-4 gap-1 sm:gap-1.5 rounded-2xl border-sky-100 bg-white/95 text-slate-700 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 shadow-2xs cursor-pointer justify-center">
+            <Link to="/admin/locations">
+              <MapPin className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+              <span className="truncate">Offices</span>
+            </Link>
+          </Button>
+        </div>
+
+        {/* Row 2 on mobile (2 buttons pair across horizontal line) */}
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 sm:contents">
+          <Button asChild variant="outline" className="w-full sm:w-auto font-extrabold text-[11px] sm:text-xs h-9 px-3 sm:px-4 gap-1.5 rounded-2xl border-sky-100 bg-white/95 text-slate-700 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 shadow-2xs cursor-pointer justify-center">
+            <Link to="/admin/visits">
+              <ClipboardList className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+              <span className="truncate">Reports</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="w-full sm:w-auto font-extrabold text-[11px] sm:text-xs h-9 px-3 sm:px-4 gap-1.5 rounded-2xl border-sky-100 bg-white/95 text-slate-700 hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 shadow-2xs cursor-pointer justify-center">
+            <Link to="/admin/map">
+              <Navigation className="h-3.5 w-3.5 text-sky-600 shrink-0" />
+              <span className="truncate">Live Map</span>
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -2263,31 +2336,31 @@ function AdminDashboard({
           }
         }}
       >
-        <DialogContent className="max-h-[92vh] overflow-y-auto overflow-x-hidden w-full max-w-[95vw] sm:max-w-2xl md:max-w-3xl p-5 sm:p-7 rounded-2xl shadow-xl box-border">
-          <DialogHeader className="pr-6">
-            <div className="flex items-center gap-1.5 text-primary text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
-              <span>Amazon Location Service Place Finder</span>
+        <DialogContent className="w-[calc(100vw-28px)] max-w-lg sm:max-w-xl max-h-[85vh] overflow-y-auto overflow-x-hidden p-3.5 sm:p-5 rounded-3xl border border-sky-100/90 bg-white/98 shadow-2xl backdrop-blur-xl box-border">
+          <DialogHeader className="mb-2 pr-7 text-left space-y-0.5">
+            <div className="inline-flex items-center gap-1 text-[9.5px] font-extrabold uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200/70 w-fit">
+              <Sparkles className="h-2.5 w-2.5 text-amber-500 shrink-0" />
+              <span>Amazon Place Finder</span>
             </div>
-            <DialogTitle className="font-display text-xl font-bold text-foreground">Add Office to Dropdown</DialogTitle>
+            <DialogTitle className="font-display text-sm sm:text-base font-extrabold text-slate-900 leading-tight pt-0.5">Add Office to Dropdown</DialogTitle>
           </DialogHeader>
           {officeForm && (
-            <div className="space-y-4 pt-1">
+            <div className="space-y-3 pt-0.5">
               {/* Live GPS Auto-Detection Hero Banner */}
-              <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-card p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 font-bold text-white shadow-md shadow-emerald-500/20">
-                    <Navigation className="h-5 w-5" />
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-50/60 p-3 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 font-bold text-white shadow-xs">
+                    <Navigation className="h-4 w-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <h4 className="text-[11px] sm:text-xs font-bold text-slate-900 flex items-center gap-1.5 leading-tight">
                       Live GPS Auto-Detection
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.2 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
-                        Live Device GPS
+                      <span className="rounded-full bg-emerald-100 px-1.5 py-0.2 text-[8.5px] font-bold text-emerald-700">
+                        Device GPS
                       </span>
                     </h4>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Only enter Office/Company Name. Click below to fetch your real live coordinates automatically.
+                    <p className="text-[10px] text-slate-500 leading-tight mt-0.5">
+                      Fetch live GPS coordinates automatically.
                     </p>
                   </div>
                 </div>
@@ -2297,24 +2370,24 @@ function AdminDashboard({
                   size="sm"
                   onClick={() => fetchDeviceGps(officeForm)}
                   disabled={fetchingGps}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 shrink-0 gap-1.5 h-9"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs shrink-0 gap-1 h-8 px-2.5 rounded-xl w-full sm:w-auto justify-center"
                 >
                   {fetchingGps ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <Navigation className="h-4 w-4" />
+                    <Navigation className="h-3.5 w-3.5" />
                   )}
-                  {fetchingGps ? "Fetching Live GPS..." : "📍 Fetch My Live Location"}
+                  {fetchingGps ? "Fetching GPS..." : "📍 Fetch Live Location"}
                 </Button>
               </div>
 
               {/* Amazon Location Places Search Box */}
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-3.5 space-y-2.5">
-                <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                  <Search className="h-3.5 w-3.5 text-primary" />
-                  Search Place / Landmark with Amazon Location Service
+              <div className="rounded-2xl border border-sky-100 bg-sky-50/40 p-2.5 sm:p-3 space-y-2">
+                <Label className="text-[10px] sm:text-[11px] font-bold text-slate-700 flex items-center gap-1">
+                  <Search className="h-3 w-3 text-sky-600 shrink-0" />
+                  <span>Search Place or Landmark</span>
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                   <div className="relative flex-1">
                     <Input
                       value={placeQuery}

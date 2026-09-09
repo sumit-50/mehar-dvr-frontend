@@ -516,9 +516,9 @@ function AdminLocationsPage() {
             }
           }}
         >
-          <DialogContent className="max-h-[92vh] overflow-y-auto overflow-x-hidden w-full max-w-[95vw] sm:max-w-2xl md:max-w-3xl p-5 sm:p-7 rounded-2xl shadow-xl box-border">
-            <DialogHeader className="pr-6">
-              <DialogTitle className="font-display text-xl font-bold">{form?.id ? "Edit Office / Location" : "Add Office / Location"}</DialogTitle>
+          <DialogContent className="w-[calc(100vw-24px)] sm:w-full sm:max-w-2xl md:max-w-3xl max-h-[88vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 rounded-2xl shadow-xl box-border">
+            <DialogHeader className="pr-8 text-left">
+              <DialogTitle className="font-display text-base sm:text-xl font-bold">{form?.id ? "Edit Office / Location" : "Add Office / Location"}</DialogTitle>
             </DialogHeader>
             {form && (
               <div className="space-y-4">
